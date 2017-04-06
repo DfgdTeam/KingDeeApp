@@ -24,10 +24,24 @@ namespace KingdeeApp
             //PubConn.writeFileLog("hahh");
             return "Hello World";
         }
-        [WebMethod(Description = "获取医院所有的科室列表")]
-        public DataSet getDeptInfo(string hospitalId, string deptId, string deptType)
+        #region 基础信息
+
+        [WebMethod(Description = "获取医院科室信息")]
+        public DataSet getHospitalDeptInfo(string hospitalId, string deptId, string deptType)
         {
-            return basic.getDeptInfo(hospitalId, deptId, deptType);
+            return basic.getHospitalDeptInfo(hospitalId, deptId, deptType);
         }
+
+        [WebMethod(Description = "获取医院医生信息")]
+        public DataSet getHospitalDoctorInfo(string hospitalId, string deptId, string doctorid)
+        {
+            return basic.getHospitalDoctorInfo(hospitalId, deptId, doctorid);
+        } 
+
+        #endregion
+
+        #region 消息
+        
+        #endregion
     }
 }
