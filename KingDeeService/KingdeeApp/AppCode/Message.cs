@@ -13,6 +13,6 @@ namespace KingdeeApp
     {
         //his库链接
         string strHISConn = "HisConn";
-
+        反反复复付
     }
 }
