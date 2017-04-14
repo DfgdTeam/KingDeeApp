@@ -28,21 +28,121 @@ namespace KingdeeApp
         #region 基础信息
 
         [WebMethod(Description = "获取医院科室信息")]
-        public DataSet getHospitalDeptInfo(string hospitalId, string deptId, string deptType)
+        public DataSet hospital_getDeptInfo(string hospitalId, string deptId, string deptType)
         {
-            return basic.getHospitalDeptInfo(hospitalId, deptId, deptType);
+            return basic.hospital_getDeptInfo(hospitalId, deptId, deptType);
         }
 
         [WebMethod(Description = "获取医院医生信息")]
-        public DataSet getHospitalDoctorInfo(string hospitalId, string deptId, string doctorid)
+        public DataSet hospital_getDoctorInfo(string hospitalId, string deptId, string doctorid)
         {
-            return basic.getHospitalDoctorInfo(hospitalId, deptId, doctorid);
-        } 
+            return basic.hospital_getDoctorInfo(hospitalId, deptId, doctorid);
+        }
+
+        [WebMethod(Description = "获取门诊患者基本信息")]
+        public DataSet baseinfo_GetOutpatientInfo(string idCardNo, string healthCardNo, string patientId, string patientName,
+            string guardianName, string guardianIdCardNo, string phone)
+        {
+            return basic.baseinfo_GetOutpatientInfo(idCardNo, healthCardNo, patientId, patientName, guardianName, guardianIdCardNo, phone);
+        }
+
+        [WebMethod(Description = "获取住院患者信息")]
+        public DataSet baseinfo_GetInpatientInfo(string idCardNo, string healthCardNo, string patientId, string inpatientId)
+        {
+            return basic.baseinfo_GetInpatientInfo(idCardNo, healthCardNo, patientId, inpatientId);
+        }
+
+        [WebMethod(Description = "获取门诊患者就诊信息")]
+        public DataSet baseinfo_GetOutpatientVisitPatient(string hospitalId, string healthCardNo, string patientId, string doctorId,
+            string startDate, string endDate, string diseaseLabel, string ICD)
+        {
+            return basic.baseinfo_GetOutpatientVisitPatient(hospitalId, healthCardNo, patientId, doctorId, startDate, endDate, diseaseLabel, ICD);
+        }
+
+        [WebMethod(Description = "获取门诊科室列表")]
+        public DataSet appointment_GetDeptInfo(string hospitalId, string deptId, string deptType)
+        {
+            return basic.appointment_GetDeptInfo(hospitalId, deptId, deptType);
+        }
+
+
+        [WebMethod(Description = "获取医生出诊信息")]
+        public DataSet appointment_GetScheduleInfo(string hospitalId, string deptId, string deptType, string doctorId,
+            string searchCode, string startDate, string endDate)
+        {
+            return basic.appointment_GetScheduleInfo(hospitalId, deptId, deptType, doctorId, searchCode, startDate, endDate);
+        }
+
+        [WebMethod(Description = "获取医生号源分时信息")]
+        public DataSet appointment_GetTimeInfo(string hospitalId, string scheduleId, string deptId, string clinicUnitId,
+            string doctorId, string regDate, string shiftCode)
+        {
+            return basic.appointment_GetTimeInfo(hospitalId, scheduleId, deptId, clinicUnitId, doctorId, regDate, shiftCode);
+        }
+
+        [WebMethod(Description = "获取当天的门诊出诊科室列表信息")]
+        public DataSet register_GetDeptInfo(string hospitalId, string deptId, string deptType)
+        {
+            return basic.register_GetDeptInfo(hospitalId, deptId, deptType);
+        }
+
+        [WebMethod(Description = "获取当天医生出诊信息查询")]
+        public DataSet register_GetScheduleInfo(string hospitalId, string deptId, string deptType, string doctorId, string searchCode)
+        {
+            return basic.register_GetScheduleInfo(hospitalId, deptId, deptType, doctorId, searchCode);
+        }
+
+        [WebMethod(Description = "待缴费记录查询")]
+        public DataSet outpatient_getPayInfo(string hospitalId, string healthCardNo, string patientId, string startDate, string endDate)
+        {
+            return basic.outpatient_getPayInfo(hospitalId, healthCardNo, patientId, startDate, endDate);
+        }
+
+        [WebMethod(Description = "获取待缴费用信息")]
+        public DataSet outpatient_GetPaybillfee(string hospitalId, string healthCardNo, string patientId, string clinicSeq,
+            string doctorId, string settleCode, string prescriptionIds)
+        {
+            return basic.outpatient_GetPaybillfee(hospitalId, healthCardNo, patientId, clinicSeq, doctorId, settleCode, prescriptionIds);
+        }
+
+
+        [WebMethod(Description = "已缴费记录查询")]
+        public DataSet outpatient_GetCompletedPayInfo(string hospitalId, string healthCardNo, string patientId,
+           string startDate, string endDate)
+        {
+            return basic.outpatient_GetCompletedPayInfo(hospitalId, healthCardNo, patientId, startDate, endDate);
+        }
+
+        [WebMethod(Description = "已缴费记录查询")]
+        public DataSet outpatient_GetCompletedPayDetailInfo(string clinicSeq, string receiptId)
+        {
+            return basic.outpatient_GetCompletedPayDetailInfo(clinicSeq, receiptId);
+        }
+
+        [WebMethod(Description = "门诊处方查询")]
+        public DataSet outpatient_GetPrescriptionInfo(string clinicSeq, string doctorId)
+        {
+            return basic.outpatient_GetPrescriptionInfo(clinicSeq, doctorId);
+        }
+
+        [WebMethod(Description = "门诊处方明细查询")]
+        public DataSet outpatient_GetPrescriptionDetailInfo(string clinicSeq, string doctorId, string prescriptionId)
+        {
+            return basic.outpatient_GetPrescriptionDetailInfo(clinicSeq, doctorId, prescriptionId);
+        }
+
+
+
+
+
+
+
+
 
         #endregion
 
         #region 消息
-        
+
         #endregion
 
         [WebMethod(Description = "检查状态提醒")]
