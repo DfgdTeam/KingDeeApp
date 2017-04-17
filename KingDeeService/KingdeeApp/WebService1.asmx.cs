@@ -42,9 +42,6 @@ namespace KingdeeApp
         #endregion
 
         #region 消息
-        
-        #endregion
-
         [WebMethod(Description = "检查状态提醒")]
         public DataSet pacsStatusChanged()
         {
@@ -55,16 +52,14 @@ namespace KingdeeApp
         {
             return mess.registerMissed();
         }
-        //[WebMethod(Description = " 医生停诊通知")]
-        //public DataSet scheduleCancel() { 
 
-        //}
         [WebMethod(Description = "获取诊间支付二维码接口")]
 
         public DataSet outpatientPayScan(string doctorId, string doctorName, string deptId, string deptName, string clinicSeq, string clinicTime, string patientId, string patientName, string healthCardNo, string phone, string hospitalId, string settleCode, string settleType)
         {
             return mess.outpatientPayScan(doctorId, doctorName, deptId, deptName, clinicSeq, clinicTime, patientId, patientName, healthCardNo, phone, hospitalId, settleCode, settleType);
         }
+
         //[WebMethod(Description = "诊间预约通知")]
         //public DataSet clinicBooking() { 
 
@@ -84,6 +79,10 @@ namespace KingdeeApp
         //public DataSet scheduleCancel() { 
 
         //}
+        #endregion
+
+
+        #region 住院
         [WebMethod(Description = "住院预交金缴纳")]
         public DataSet inpatient_doPrepay(string orderId, string hospitalId, string idCardNo, string healthCardNo, string patientId, string inpatientId, string orderTime, string tradeNo, string operatorId, string machineId, string payAmout, string payMode)
         {
@@ -114,6 +113,10 @@ namespace KingdeeApp
         {
             return mess.inpatient_operationCheck(inpatienId, operType);
         }
+
+        #endregion
+
+        #region 检验
         [WebMethod(Description = "检验报告列表查询")]
         public DataSet lis_getReport(string healthCardNo, string patientId, string clinicSeq, string beginDate, string endDate)
         {
@@ -124,6 +127,9 @@ namespace KingdeeApp
         {
             return mess.lis_getReportItem(inspectionId);
         }
+        #endregion
+
+        #region 检查
         [WebMethod(Description = " 检查报告列表查询接口")]
         public DataSet pacs_getReport(string healthCardNo, string patientId, string inpatientId, string clinicSeq, string beginDate, string endDate)
         {
@@ -134,11 +140,15 @@ namespace KingdeeApp
         {
             return mess.pacs_getReportDetail(reportId);
         }
+        #endregion
+
+
         [WebMethod(Description = "挂号记录查询")]
         public DataSet support_getRegisterInfo(string healthCardNo, string clinicSeq, string patientId, string orderId, string orderDate, string visitDate, string orderStatus)
         {
             return mess.support_getRegisterInfo(healthCardNo, clinicSeq, patientId, orderId, orderDate, visitDate, orderStatus);
         }
+        #region 辅助功能
         [WebMethod(Description = "获取指引单")]
         public DataSet support_getGuideList(string clinicSeq, string receiptId)
         {
@@ -155,9 +165,15 @@ namespace KingdeeApp
 
         //}
         //[WebMethod(Description = "停诊医生信息查询")]
-        //public DataSet support_getStopDoctorInfo()
+        //public DataSet support_getStopDoctorInfo(string hospitalId, string startDate, string endDate )
         //{
 
         //}
+        [WebMethod(Description = "分页查询交易信息")]
+        public DataSet support_pageQueryOrder(string orderId, string tradeDate, string productType, string payMode, string pageSize, string pageNo)
+        { 
+        return mess.support_pageQueryOrder(orderId,tradeDate,productType,payMode,pageSize,pageNo)
+        }
+        #endregion
     }
 }

@@ -1120,14 +1120,14 @@ namespace KingdeeApp
             DataSet ds = new DataSet();
             DataTable dt = new DataTable();
             string sql = @"SELECT B.ID_NO,
-       B.NAME,
-       B.PHONE_NUMBER_HOME,
-       B.VIP_INDICATOR,
-       A.PATIENT_ID,
-       B.CREATE_DATE
-  FROM PATS_IN_HOSPITAL A
-  JOIN PAT_MASTER_INDEX B ON A.PATIENT_ID = B.PATIENT_ID
-  WHERE 1=1";
+                                   B.NAME,
+                                   B.PHONE_NUMBER_HOME,
+                                   B.VIP_INDICATOR,
+                                   A.PATIENT_ID,
+                                   B.CREATE_DATE
+                              FROM PATS_IN_HOSPITAL A
+                              JOIN PAT_MASTER_INDEX B ON A.PATIENT_ID = B.PATIENT_ID
+                              WHERE 1=1";
             if (!string.IsNullOrEmpty(idCardNo))
             {
                 sql += "AND B.ID_NO='" + idCardNo + "'";
@@ -1172,6 +1172,61 @@ namespace KingdeeApp
             DataTable dt = new DataTable();
             string sql = @"";
 
+            return ds;
+        }
+        // 分页查询交易信息
+        public DataSet support_pageQueryOrder(string orderId, string tradeDate, string productType, string payMode, string pageSize, string pageNo)
+        {
+            DataSet ds = new DataSet();
+            DataTable dt = new DataTable();
+            if (orderId == "" && tradeDate == "") {
+                PubConn.writeFileLog("移动订单号与交易时间不能同时为空");
+                return null;
+            }
+            if (payMode == "") {
+                PubConn.writeFileLog("交易方式不能为空");
+            }
+            string sql = @"SELECT A.ORDER_ID,
+                                   A.TRADE_DATE,
+                                   A.PAY_MODE,
+                                   COUNT(*),
+                                   A.ORDER_ID,
+                                   A.TRADE_DATE,
+                                   A.TRADE_NO,
+                                   A.ORDER_ID,
+                                   A.COSTS
+                              FROM TRADE_RECORD A
+                             GROUP BY A.ORDER_ID,
+                                      A.TRADE_DATE,
+                                      A.PAY_MODE,
+                                      A.TRADE_NO,
+                                      A.ORDER_ID,
+                                      A.COSTS
+                                      WHERE 1=1";
+            if (!string.IsNullOrEmpty(orderId))
+            {
+                sql += "AND A.ORDER_ID='" + orderId + "'";
+            }
+            if (!string.IsNullOrEmpty(tradeDate)) {
+                sql += "AND A.TRADE_DATE='" + tradeDate + "'";
+            }
+            if (!string.IsNullOrEmpty(payMode))
+            {
+                sql += "AND A.PAY_MODE='" + payMode + "'";
+            }
+            try
+            {
+                dt = PubConn.Query(sql,strHISConn).Tables[0];
+                ds.Tables.Add(GETReport("0","查询成功"));
+                ds.Tables.Add(dt.Copy());
+            }
+            catch (Exception ex)
+            {
+                
+                PubConn.writeFileLog(ex.Message+"\r\n"+sql+"\r\n");
+                ds.Tables.Add(GETReport("-1", "查询失败"));
+                ds.Tables.Add(dt.Copy());
+            }
             return ds;
         }
         public DataTable GETReport(string resultCode, string resultDesc)
