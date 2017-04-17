@@ -159,11 +159,6 @@ namespace KingdeeApp
         {
             return mess.user_getCardInfo(idCardNo, patientName, phone);
         }
-        //[WebMethod(Description = " 获取用户可用服务对象列表")]
-        //public DataSet support_getSvObject(string hospitalId, string healthCardNo)
-        //{
-
-        //}
         //[WebMethod(Description = "停诊医生信息查询")]
         //public DataSet support_getStopDoctorInfo(string hospitalId, string startDate, string endDate )
         //{
@@ -171,8 +166,8 @@ namespace KingdeeApp
         //}
         [WebMethod(Description = "分页查询交易信息")]
         public DataSet support_pageQueryOrder(string orderId, string tradeDate, string productType, string payMode, string pageSize, string pageNo)
-        { 
-        return mess.support_pageQueryOrder(orderId,tradeDate,productType,payMode,pageSize,pageNo)
+        {
+            return mess.support_pageQueryOrder(orderId, tradeDate, productType, payMode, pageSize, pageNo);
         }
         #endregion
     }
