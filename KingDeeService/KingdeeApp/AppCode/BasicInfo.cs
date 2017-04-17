@@ -691,6 +691,7 @@ namespace KingdeeApp
             return ds;
         }
 
+
         /// <summary>
         /// 获取当天的门诊出诊科室列表信息。
         /// </summary>
@@ -1050,11 +1051,12 @@ namespace KingdeeApp
                                        TO_CHAR(A.VISIT_DATE, 'YYYY-MM-DD HH24:MI') CHARGEDATE ,--收费日期
                                        '0' ALLOWREFUND,
                                        '' REMARK,
-                                       '' ORDERID --移动平台订单号
-                              FROM OUTP_ORDER_DESC A, OUTP_BILL_ITEMS B, DEPT_DICT
+                                       C.ORDER_ID ORDERID --移动平台订单号
+                              FROM OUTP_ORDER_DESC A, OUTP_BILL_ITEMS B, DEPT_DICT,TRADE_RECORD C
                              WHERE A.VISIT_DATE = B.VISIT_DATE
                                AND A.VISIT_NO = B.VISIT_NO
-                               AND A.ORDERED_BY_DEPT = DEPT_DICT.DEPT_CODE(+) ";
+                               AND A.ORDERED_BY_DEPT = DEPT_DICT.DEPT_CODE(+)
+                               AND C.RCPT_NO=A.RCPT_NO";
             if (!string.IsNullOrEmpty(healthCardNo))
             {
                 strSql += " AND A.PATIENT_ID='" + healthCardNo + "' ";
@@ -1075,7 +1077,8 @@ namespace KingdeeApp
                               A.VISIT_DATE,
                               A.ORDERED_BY_DEPT,
                               A.ORDERED_BY_DOCTOR,
-                              DEPT_DICT.DEPT_NAME";
+                              DEPT_DICT.DEPT_NAME,
+                              C.ORDER_ID";
             try
             {
                 dt2 = PubConn.Query(strSql, strHISConn).Tables[0];
