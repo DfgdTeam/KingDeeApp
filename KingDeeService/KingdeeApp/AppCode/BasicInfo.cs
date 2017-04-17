@@ -24,11 +24,20 @@ namespace KingdeeApp
         public DataSet hospital_getDeptInfo(string hospitalId, string deptId, string deptType)
         {
             DataSet ds = new DataSet();
-            if (hospitalId != "42520068101")
+            if (string.IsNullOrEmpty(hospitalId))
             {
-                PubConn.writeFileLog("医疗机构代码错误");
-                ds.Tables.Add(GetStatus("-1", "查询失败"));
+                PubConn.writeFileLog("医疗机构代码不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,医疗机构代码不能为空"));
                 return ds;
+            }
+            else
+            {
+                if (hospitalId != "42520068101")
+                {
+                    PubConn.writeFileLog("医疗机构代码错误");
+                    ds.Tables.Add(GetStatus("-1", "查询失败,医疗机构代码错误"));
+                    return ds;
+                }
             }
             DataTable dt2 = new DataTable();
             string strSql = @"SELECT A.DEPT_CODE DEPTID,
@@ -76,11 +85,20 @@ namespace KingdeeApp
         public DataSet hospital_getDoctorInfo(string hospitalId, string deptId, string doctorid)
         {
             DataSet ds = new DataSet();
-            if (hospitalId != "42520068101")
+            if (string.IsNullOrEmpty(hospitalId))
             {
-                PubConn.writeFileLog("医疗机构代码错误");
-                ds.Tables.Add(GetStatus("-1", "查询失败"));
+                PubConn.writeFileLog("医疗机构代码不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,医疗机构代码不能为空"));
                 return ds;
+            }
+            else
+            {
+                if (hospitalId != "42520068101")
+                {
+                    PubConn.writeFileLog("医疗机构代码错误");
+                    ds.Tables.Add(GetStatus("-1", "查询失败,医疗机构代码错误"));
+                    return ds;
+                }
             }
             DataTable dt2 = new DataTable();
             string strSql = @"SELECT A.USER_ID DOCTORID,
@@ -116,7 +134,7 @@ namespace KingdeeApp
             catch (Exception ex)
             {
                 PubConn.writeFileLog(ex.Message);
-                ds.Tables.Add(GetStatus("-1", "查询失败"));
+                ds.Tables.Add(GetStatus("-1", "查询失败," + ex.Message));
             }
             return ds;
         }
@@ -139,7 +157,7 @@ namespace KingdeeApp
             if (string.IsNullOrEmpty(idCardNo) && string.IsNullOrEmpty(healthCardNo) && string.IsNullOrEmpty(patientId))
             {
                 PubConn.writeFileLog("身份证号、健康卡号、病人ID号不能同事为空");
-                ds.Tables.Add(GetStatus("-1", "查询失败"));
+                ds.Tables.Add(GetStatus("-1", "查询失败,idCardNo、healthCardNo、patientId不能同时为空。"));
                 return ds;
             }
             DataTable dt2 = new DataTable();
@@ -198,7 +216,7 @@ namespace KingdeeApp
             catch (Exception ex)
             {
                 PubConn.writeFileLog(ex.Message);
-                ds.Tables.Add(GetStatus("-1", "查询失败"));
+                ds.Tables.Add(GetStatus("-1", "查询失败," + ex.Message));
             }
             return ds;
         }
@@ -217,7 +235,7 @@ namespace KingdeeApp
             if (string.IsNullOrEmpty(healthCardNo))
             {
                 PubConn.writeFileLog("健康卡号不能为空");
-                ds.Tables.Add(GetStatus("-1", "查询失败"));
+                ds.Tables.Add(GetStatus("-1", "查询失败,健康卡号不能为空"));
                 return ds;
             }
             DataTable dt2 = new DataTable();
@@ -303,7 +321,7 @@ namespace KingdeeApp
             catch (Exception ex)
             {
                 PubConn.writeFileLog(ex.Message);
-                ds.Tables.Add(GetStatus("-1", "查询失败"));
+                ds.Tables.Add(GetStatus("-1", "查询失败," + ex.Message));
             }
             return ds;
         }
@@ -326,8 +344,20 @@ namespace KingdeeApp
             DataSet ds = new DataSet();
             if (string.IsNullOrEmpty(doctorId) && string.IsNullOrEmpty(healthCardNo) && string.IsNullOrEmpty(patientId))
             {
-                PubConn.writeFileLog("医生工号、健康卡号、病人ID号不能同事为空");
-                ds.Tables.Add(GetStatus("-1", "查询失败"));
+                PubConn.writeFileLog("医生工号、健康卡号、病人ID号不能同时为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败，医生工号、健康卡号、病人ID号不能同时为空"));
+                return ds;
+            }
+            if (string.IsNullOrEmpty(startDate))
+            {
+                PubConn.writeFileLog("开始日期不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,开始日期不能为空"));
+                return ds;
+            }
+            if (string.IsNullOrEmpty(endDate))
+            {
+                PubConn.writeFileLog("结束日期不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,结束日期不能为空"));
                 return ds;
             }
             DataTable dt2 = new DataTable();
@@ -432,7 +462,7 @@ namespace KingdeeApp
             catch (Exception ex)
             {
                 PubConn.writeFileLog(ex.Message);
-                ds.Tables.Add(GetStatus("-1", "查询失败"));
+                ds.Tables.Add(GetStatus("-1", "查询失败，" + ex.Message));
             }
             return ds;
         }
@@ -447,11 +477,20 @@ namespace KingdeeApp
         public DataSet appointment_GetDeptInfo(string hospitalId, string deptId, string deptType)
         {
             DataSet ds = new DataSet();
-            if (hospitalId != "42520068101")
+            if (string.IsNullOrEmpty(hospitalId))
             {
-                PubConn.writeFileLog("医疗机构代码错误");
-                ds.Tables.Add(GetStatus("-1", "查询失败"));
+                PubConn.writeFileLog("医疗机构代码不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,医疗机构代码不能为空"));
                 return ds;
+            }
+            else
+            {
+                if (hospitalId != "42520068101")
+                {
+                    PubConn.writeFileLog("医疗机构代码错误");
+                    ds.Tables.Add(GetStatus("-1", "查询失败,医疗机构代码错误"));
+                    return ds;
+                }
             }
             DataTable dt2 = new DataTable();
             string strSql = @"SELECT A.DEPT_CODE DEPTID,
@@ -483,7 +522,7 @@ namespace KingdeeApp
             catch (Exception ex)
             {
                 PubConn.writeFileLog(ex.Message);
-                ds.Tables.Add(GetStatus("-1", "查询失败"));
+                ds.Tables.Add(GetStatus("-1", "查询失败," + ex.Message));
                 ds.Tables.Add(dt2);
             }
             return ds;
@@ -507,13 +546,28 @@ namespace KingdeeApp
             if (string.IsNullOrEmpty(hospitalId))
             {
                 PubConn.writeFileLog("医疗机构代码不能为空");
-                ds.Tables.Add(GetStatus("-1", "查询失败"));
+                ds.Tables.Add(GetStatus("-1", "查询失败,医疗机构代码不能为空"));
                 return ds;
             }
-            if (hospitalId != "42520068101")
+            else
             {
-                PubConn.writeFileLog("医疗机构代码错误");
-                ds.Tables.Add(GetStatus("-1", "查询失败"));
+                if (hospitalId != "42520068101")
+                {
+                    PubConn.writeFileLog("医疗机构代码错误");
+                    ds.Tables.Add(GetStatus("-1", "查询失败,医疗机构代码错误"));
+                    return ds;
+                }
+            }
+            if (string.IsNullOrEmpty(startDate))
+            {
+                PubConn.writeFileLog("开始日期不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,开始日期不能为空"));
+                return ds;
+            }
+            if (string.IsNullOrEmpty(endDate))
+            {
+                PubConn.writeFileLog("结束日期不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,结束日期不能为空"));
                 return ds;
             }
             DataTable dt2 = new DataTable();
@@ -595,7 +649,7 @@ namespace KingdeeApp
             catch (Exception ex)
             {
                 PubConn.writeFileLog(ex.Message);
-                ds.Tables.Add(GetStatus("-1", "查询失败"));
+                ds.Tables.Add(GetStatus("-1", "查询失败," + ex.Message));
                 ds.Tables.Add(dt2);
             }
             return ds;
@@ -622,11 +676,14 @@ namespace KingdeeApp
                 ds.Tables.Add(GetStatus("-1", "查询失败,医疗机构代码不能为空"));
                 return ds;
             }
-            if (hospitalId != "42520068101")
+            else
             {
-                PubConn.writeFileLog("医疗机构代码错误");
-                ds.Tables.Add(GetStatus("-1", "查询失败,医疗机构代码错误"));
-                return ds;
+                if (hospitalId != "42520068101")
+                {
+                    PubConn.writeFileLog("医疗机构代码错误");
+                    ds.Tables.Add(GetStatus("-1", "查询失败,医疗机构代码错误"));
+                    return ds;
+                }
             }
             DataTable dt2 = new DataTable();
             string strSql = @" SELECT DISTINCT '' STARTTIME,
@@ -643,10 +700,21 @@ namespace KingdeeApp
             {
                 //strSql += " AND A.DEPTID='" + deptId + "' ";
             }
-            else
+            if (!string.IsNullOrEmpty(deptId))
             {
-                strSql += " B.CLINIC_DEPT='" + deptId + "' AND　B.SERIAL_NO ='" + clinicUnitId +
-                    "' AND S.STAFF_ID='" + doctorId + "' AND TO_CHAR(C.CLINIC_DATE,'yyyy-MM-dd')='" + regDate + "' ";
+                strSql += " AND B.CLINIC_DEPT='" + deptId + "' ";
+            }
+            if (!string.IsNullOrEmpty(clinicUnitId))
+            {
+                strSql += " AND　B.SERIAL_NO ='" + clinicUnitId + "' ";
+            }
+            if (!string.IsNullOrEmpty(doctorId))
+            {
+                strSql += " AND S.STAFF_ID='" + doctorId + "' ";
+            }
+            if (!string.IsNullOrEmpty(regDate))
+            {
+                strSql += "  AND TO_CHAR(C.CLINIC_DATE,'yyyy-MM-dd')='" + regDate + "' ";
             }
             try
             {
@@ -685,7 +753,7 @@ namespace KingdeeApp
             catch (Exception ex)
             {
                 PubConn.writeFileLog(ex.Message);
-                ds.Tables.Add(GetStatus("-1", "查询失败"));
+                ds.Tables.Add(GetStatus("-1", "查询失败," + ex.Message));
                 ds.Tables.Add(dt2);
             }
             return ds;
@@ -702,11 +770,20 @@ namespace KingdeeApp
         public DataSet register_GetDeptInfo(string hospitalId, string deptId, string deptType)
         {
             DataSet ds = new DataSet();
-            if (hospitalId != "42520068101")
+            if (string.IsNullOrEmpty(hospitalId))
             {
-                PubConn.writeFileLog("医疗机构代码错误");
-                ds.Tables.Add(GetStatus("-1", "查询失败,医疗机构代码错误"));
+                PubConn.writeFileLog("医疗机构代码不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,医疗机构代码不能为空"));
                 return ds;
+            }
+            else
+            {
+                if (hospitalId != "42520068101")
+                {
+                    PubConn.writeFileLog("医疗机构代码错误");
+                    ds.Tables.Add(GetStatus("-1", "查询失败,医疗机构代码错误"));
+                    return ds;
+                }
             }
             DataTable dt2 = new DataTable();
             string strSql = @"SELECT DISTINCT *
@@ -745,7 +822,7 @@ namespace KingdeeApp
             catch (Exception ex)
             {
                 PubConn.writeFileLog(ex.Message);
-                ds.Tables.Add(GetStatus("-1", "查询失败"));
+                ds.Tables.Add(GetStatus("-1", "查询失败," + ex.Message));
                 ds.Tables.Add(dt2);
             }
             return ds;
@@ -763,11 +840,20 @@ namespace KingdeeApp
         public DataSet register_GetScheduleInfo(string hospitalId, string deptId, string deptType, string doctorId, string searchCode)
         {
             DataSet ds = new DataSet();
-            if (hospitalId != "42520068101")
+            if (string.IsNullOrEmpty(hospitalId))
             {
-                PubConn.writeFileLog("医疗机构代码错误");
-                ds.Tables.Add(GetStatus("-1", "查询失败,医疗机构代码错误"));
+                PubConn.writeFileLog("医疗机构代码不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,医疗机构代码不能为空"));
                 return ds;
+            }
+            else
+            {
+                if (hospitalId != "42520068101")
+                {
+                    PubConn.writeFileLog("医疗机构代码错误");
+                    ds.Tables.Add(GetStatus("-1", "查询失败,医疗机构代码错误"));
+                    return ds;
+                }
             }
             DataTable dt2 = new DataTable();
             string strSql = @"SELECT DISTINCT *
@@ -836,7 +922,7 @@ namespace KingdeeApp
             catch (Exception ex)
             {
                 PubConn.writeFileLog(ex.Message);
-                ds.Tables.Add(GetStatus("-1", "查询失败"));
+                ds.Tables.Add(GetStatus("-1", "查询失败," + ex.Message));
                 ds.Tables.Add(dt2);
             }
             return ds;
@@ -854,10 +940,17 @@ namespace KingdeeApp
         public DataSet outpatient_getPayInfo(string hospitalId, string healthCardNo, string patientId, string startDate, string endDate)
         {
             DataSet ds = new DataSet();
-            if (hospitalId != "42520068101")
+
+            if (string.IsNullOrEmpty(healthCardNo))
             {
-                PubConn.writeFileLog("医疗机构代码错误");
-                ds.Tables.Add(GetStatus("-1", "查询失败,医疗机构代码错误"));
+                PubConn.writeFileLog("健康卡号码不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,健康卡号码不能为空"));
+                return ds;
+            }
+            if (string.IsNullOrEmpty(patientId))
+            {
+                PubConn.writeFileLog("患者唯一ID不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,患者唯一ID不能为空"));
                 return ds;
             }
             DataTable dt2 = new DataTable();
@@ -893,6 +986,15 @@ namespace KingdeeApp
                                            AND (M.VISIT_DATE = B.VISIT_DATE AND M.VISIT_NO = B.VISIT_NO)
                                            AND D.CLINIC_LABEL = M.CLINIC_LABEL
                                            AND D.CLINIC_DEPT = B.PERFORMED_BY";
+            if (!string.IsNullOrEmpty(hospitalId))
+            {
+                if (hospitalId != "42520068101")
+                {
+                    PubConn.writeFileLog("医疗机构代码错误");
+                    ds.Tables.Add(GetStatus("-1", "查询失败,医疗机构代码错误"));
+                    return ds;
+                }
+            }
             if (!string.IsNullOrEmpty(healthCardNo))
             {
                 strSql += " AND C.PATIENT_ID='" + healthCardNo + "' ";
@@ -931,7 +1033,7 @@ namespace KingdeeApp
             catch (Exception ex)
             {
                 PubConn.writeFileLog(ex.Message);
-                ds.Tables.Add(GetStatus("-1", "查询失败"));
+                ds.Tables.Add(GetStatus("-1", "查询失败," + ex.Message));
                 ds.Tables.Add(dt2);
             }
             return ds;
@@ -952,10 +1054,49 @@ namespace KingdeeApp
             string doctorId, string settleCode, string prescriptionIds)
         {
             DataSet ds = new DataSet();
-            if (hospitalId != "42520068101")
+            if (string.IsNullOrEmpty(hospitalId))
             {
-                PubConn.writeFileLog("医疗机构代码错误");
-                ds.Tables.Add(GetStatus("-1", "查询失败,医疗机构代码错误"));
+                PubConn.writeFileLog("医院代码不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,医院代码不能为空"));
+                return ds;
+            }
+            else
+            {
+                if (hospitalId != "42520068101")
+                {
+                    PubConn.writeFileLog("医疗机构代码错误");
+                    ds.Tables.Add(GetStatus("-1", "查询失败,医疗机构代码错误"));
+                    return ds;
+                }
+            }
+            if (string.IsNullOrEmpty(healthCardNo))
+            {
+                PubConn.writeFileLog("健康卡号码不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,健康卡号码不能为空"));
+                return ds;
+            }
+            if (string.IsNullOrEmpty(patientId))
+            {
+                PubConn.writeFileLog("患者唯一ID不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,患者唯一ID不能为空"));
+                return ds;
+            }
+            if (string.IsNullOrEmpty(patientId))
+            {
+                PubConn.writeFileLog("患者唯一ID不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,患者唯一ID不能为空"));
+                return ds;
+            }
+            if (string.IsNullOrEmpty(clinicSeq))
+            {
+                PubConn.writeFileLog("就诊流水号不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,就诊流水号不能为空"));
+                return ds;
+            }
+            if (string.IsNullOrEmpty(doctorId))
+            {
+                PubConn.writeFileLog("接诊医生工号不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,接诊医生工号不能为空"));
                 return ds;
             }
             DataTable dt2 = new DataTable();
@@ -1012,7 +1153,7 @@ namespace KingdeeApp
             catch (Exception ex)
             {
                 PubConn.writeFileLog(ex.Message);
-                ds.Tables.Add(GetStatus("-1", "查询失败"));
+                ds.Tables.Add(GetStatus("-1", "查询失败," + ex.Message));
                 ds.Tables.Add(dt2);
             }
             return ds;
@@ -1031,10 +1172,28 @@ namespace KingdeeApp
             string startDate, string endDate)
         {
             DataSet ds = new DataSet();
-            if (hospitalId != "42520068101")
+            if (string.IsNullOrEmpty(healthCardNo))
             {
-                PubConn.writeFileLog("医疗机构代码错误");
-                ds.Tables.Add(GetStatus("-1", "查询失败,医疗机构代码错误"));
+                PubConn.writeFileLog("健康卡号不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,健康卡号不能为空"));
+                return ds;
+            }
+            if (string.IsNullOrEmpty(patientId))
+            {
+                PubConn.writeFileLog("患者唯一ID不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,患者唯一ID不能为空"));
+                return ds;
+            }
+            if (string.IsNullOrEmpty(startDate))
+            {
+                PubConn.writeFileLog("开始日期不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,开始日期不能为空"));
+                return ds;
+            }
+            if (string.IsNullOrEmpty(endDate))
+            {
+                PubConn.writeFileLog("结束日期不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,结束日期不能为空"));
                 return ds;
             }
             DataTable dt2 = new DataTable();
@@ -1057,6 +1216,15 @@ namespace KingdeeApp
                                AND A.VISIT_NO = B.VISIT_NO
                                AND A.ORDERED_BY_DEPT = DEPT_DICT.DEPT_CODE(+)
                                AND C.RCPT_NO=A.RCPT_NO";
+            if (!string.IsNullOrEmpty(hospitalId))
+            {
+                if (hospitalId != "42520068101")
+                {
+                    PubConn.writeFileLog("医疗机构代码错误");
+                    ds.Tables.Add(GetStatus("-1", "查询失败,医疗机构代码错误"));
+                    return ds;
+                }
+            }
             if (!string.IsNullOrEmpty(healthCardNo))
             {
                 strSql += " AND A.PATIENT_ID='" + healthCardNo + "' ";
@@ -1088,7 +1256,7 @@ namespace KingdeeApp
             catch (Exception ex)
             {
                 PubConn.writeFileLog(ex.Message);
-                ds.Tables.Add(GetStatus("-1", "查询失败"));
+                ds.Tables.Add(GetStatus("-1", "查询失败," + ex.Message));
                 ds.Tables.Add(dt2);
             }
             return ds;
@@ -1104,6 +1272,12 @@ namespace KingdeeApp
         public DataSet outpatient_GetCompletedPayDetailInfo(string clinicSeq, string receiptId)
         {
             DataSet ds = new DataSet();
+            if (string.IsNullOrEmpty(clinicSeq))
+            {
+                PubConn.writeFileLog("就诊流水号不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,就诊流水号不能为空"));
+                return ds;
+            }
             DataTable dt2 = new DataTable();
             string strSql = @"  SELECT B.FEE_CLASS_NAME DETAILFEE, --缴费费别
                                        TO_CHAR(A.ITEM_NO) DETAILID, --缴费细目流水号，要求唯一
@@ -1136,7 +1310,7 @@ namespace KingdeeApp
             catch (Exception ex)
             {
                 PubConn.writeFileLog(ex.Message);
-                ds.Tables.Add(GetStatus("-1", "查询失败"));
+                ds.Tables.Add(GetStatus("-1", "查询失败," + ex.Message));
                 ds.Tables.Add(dt2);
             }
             return ds;
@@ -1151,6 +1325,19 @@ namespace KingdeeApp
         public DataSet outpatient_GetPrescriptionInfo(string clinicSeq, string doctorId)
         {
             DataSet ds = new DataSet();
+
+            if (string.IsNullOrEmpty(clinicSeq))
+            {
+                PubConn.writeFileLog("就诊流水号不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,就诊流水号不能为空"));
+                return ds;
+            }
+            if (string.IsNullOrEmpty(doctorId))
+            {
+                PubConn.writeFileLog("医生工号不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,医生工号不能为空"));
+                return ds;
+            }
             DataTable dt2 = new DataTable();
             string strSql = @" SELECT A.PRESC_NO PRESCRIPTIONID,
                                        A.PRESC_TYPE PRESCRIPTIONNAME,
@@ -1212,6 +1399,18 @@ namespace KingdeeApp
         public DataSet outpatient_GetPrescriptionDetailInfo(string clinicSeq, string doctorId, string prescriptionId)
         {
             DataSet ds = new DataSet();
+            if (string.IsNullOrEmpty(clinicSeq))
+            {
+                PubConn.writeFileLog("就诊流水号不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,就诊流水号不能为空"));
+                return ds;
+            }
+            if (string.IsNullOrEmpty(prescriptionId))
+            {
+                PubConn.writeFileLog("处方号不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,处方号不能为空"));
+                return ds;
+            }
             DataTable dt2 = new DataTable();
             string strSql = @" SELECT B.PHAM_CODE DETAILID,
                                        B.PHAM_NAME DETAILNAME,
