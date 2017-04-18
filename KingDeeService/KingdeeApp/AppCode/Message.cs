@@ -31,7 +31,7 @@ namespace KingdeeApp
                   FROM PAT_MASTER_INDEX A
                   JOIN CLINIC_MASTER B ON A.PATIENT_ID = B.PATIENT_ID
                   JOIN LAB_TEST_MASTER C ON B.PATIENT_ID = C.PATIENT_ID
-                  JOIN LAB_RESULT D ON C.TEST_NO = D.TEST_NO";
+                  JOIN LAB_RESULT D ON C.TEST_NO = D.TEST_NO  WHERE ROWNUM<=10";
             try
             {
                  dt = PubConn.Query(sql, strHISConn).Tables[0];
@@ -97,7 +97,7 @@ namespace KingdeeApp
                            A.INP_NO,
                            B.INSURANCE_NO
                       FROM PAT_MASTER_INDEX A
-                      JOIN PAT_VISIT B ON A.PATIENT_ID = B.PATIENT_ID";
+                      JOIN PAT_VISIT B ON A.PATIENT_ID = B.PATIENT_ID  WHERE ROWNUM<=10";
             try
             {
                  dt = PubConn.Query(sql, strHISConn).Tables[0];
@@ -118,7 +118,7 @@ namespace KingdeeApp
         {
             DataSet ds = new DataSet();
             DataTable dt = new DataTable();
-            string sql = @"SELECT A.PATIENT_ID, A.NAME, A.PATIENT_ID FROM PAT_MASTER_INDEX A";
+            string sql = @"SELECT A.PATIENT_ID, A.NAME, A.PATIENT_ID FROM PAT_MASTER_INDEX A  WHERE ROWNUM<=10 ";
             try
             {
                  dt = PubConn.Query(sql, strHISConn).Tables[0];
@@ -146,7 +146,7 @@ namespace KingdeeApp
                                     B.VISIT_DATE
                                      FROM CLINIC_INDEX A
                                      JOIN CLINIC_MASTER B ON A.CLINIC_LABEL = B.CLINIC_LABEL
-                                     JOIN DEPT_DICT C ON C.DEPT_CODE = A.CLINIC_DEPT";
+                                     JOIN DEPT_DICT C ON C.DEPT_CODE = A.CLINIC_DEPT  WHERE ROWNUM<=10";
             try
             {
                  dt = PubConn.Query(sql, strHISConn).Tables[0];
@@ -238,7 +238,7 @@ namespace KingdeeApp
             DataTable dt = new DataTable();
             string sql = @"SELECT A.PATIENT_ID, A.NAME, B.VISIT_DATE
                                   FROM PAT_MASTER_INDEX A
-                                  JOIN CLINIC_MASTER B ON A.PATIENT_ID = B.PATIENT_ID";
+                                  JOIN CLINIC_MASTER B ON A.PATIENT_ID = B.PATIENT_ID  WHERE ROWNUM<=10";
             try
             {
                  dt = PubConn.Query(sql, strHISConn).Tables[0];
@@ -404,7 +404,7 @@ namespace KingdeeApp
         {
             DataSet ds = new DataSet();
             DataTable dt = new DataTable();
-            string sql = @"SELECT A.PATIENT_ID, A.PATIENT_ID FROM CLINIC_MASTER A";
+            string sql = @"SELECT  A.PATIENT_ID, A.PATIENT_ID FROM CLINIC_MASTER A  WHERE ROWNUM<=10";
             try
             {
                 dt = PubConn.Query(sql, strHISConn).Tables[0];
@@ -443,7 +443,7 @@ namespace KingdeeApp
                                 JOIN PAT_MASTER_INDEX D ON C.PATIENT_ID = D.PATIENT_ID
                                 JOIN OUTP_PAYMENTS_MONEY E ON E.RCPT_NO = A.RCPT_NO
                                 JOIN PAY_WAY_DICT R ON E.MONEY_TYPE = R.PAY_WAY_NAME
-                                JOIN USERS U ON A.ORDERED_BY_DOCTOR = U.USER_NAME";
+                                JOIN USERS U ON A.ORDERED_BY_DOCTOR = U.USER_NAME WHERE ROWNUM<=10";
             try
             {
                 dt = PubConn.Query(sql, strHISConn).Tables[0];
@@ -907,7 +907,7 @@ namespace KingdeeApp
                                    A.RESULT_DATE_TIME RESULT
                               FROM LAB_RESULT A
                               JOIN LAB_TEST_MASTER B ON A.TEST_NO = B.TEST_NO
-                              WHERE 1=";
+                              WHERE 1=1";
             if (!string.IsNullOrEmpty(inspectionId))
             {
                 sql += "AND A.TEST_NO='" + inspectionId + "'";
