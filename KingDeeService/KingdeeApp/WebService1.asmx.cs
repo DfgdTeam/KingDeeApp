@@ -147,10 +147,41 @@ namespace KingdeeApp
         {
             return mess.pacsStatusChanged();
         }
+        [WebMethod(Description = " 检验报告通知")]
+        public DataSet lisReportCompleted()
+        {
+            return mess.lisReportCompleted();
+        }
+        [WebMethod(Description = "检查报告通知")]
+        public DataSet pacsReportCompleted()
+        {
+            return mess.pacsReportCompleted();
+        }
+        [WebMethod(Description = "患者基本信息")]
+        public DataSet updatePatientInfo()
+        {
+            return mess.updatePatientInfo();
+        }
         [WebMethod(Description = "爽约通知")]
         public DataSet registerMissed()
         {
             return mess.registerMissed();
+        }
+        [WebMethod(Description = "健康卡注销")]
+        public DataSet discard()
+        {
+            return mess.discard();
+        }
+        [WebMethod(Description = "就诊报到")]
+        public DataSet visitReport()
+        {
+            return mess.visitReport();
+        }
+        [WebMethod(Description = " 住院每日清单通知")]
+        public DataSet dailyBill()
+        {
+            return mess.dailyBill();
+
         }
         //[WebMethod(Description = " 医生停诊通知")]
         //public DataSet scheduleCancel() { 
