@@ -69,7 +69,7 @@ namespace KingdeeApp
             catch (Exception ex)
             {
                 PubConn.writeFileLog(ex.Message);
-                ds.Tables.Add(GetStatus("-1", "查询失败"));
+                ds.Tables.Add(GetStatus("-1", "查询失败" + ex.Message));
                 ds.Tables.Add(dt2);
             }
             return ds;
@@ -730,12 +730,12 @@ namespace KingdeeApp
                             dr["STARTTIME"] = "08:00";
                             dr["ENDTIME"] = "12:00";
                         }
-                        else if (shiftCode == "1")
+                        else if (shiftCode == "2")
                         {
                             dr["STARTTIME"] = "14:30";
                             dr["ENDTIME"] = "17:00";
                         }
-                        else if (shiftCode == "1")
+                        else if (shiftCode == "3")
                         {
                             dr["STARTTIME"] = "08:00";
                             dr["ENDTIME"] = "17:00";
@@ -758,6 +758,1076 @@ namespace KingdeeApp
             }
             return ds;
         }
+
+
+        /// <summary>
+        /// 预约
+        /// </summary>
+        /// <param name="orderId">移动服务的订单号</param>
+        /// <param name="hospitalId">医院代码</param>
+        /// <param name="deptId">科室代码</param>
+        /// <param name="clinicUnitId">诊疗单元代码</param>
+        /// <param name="doctorId">医生代码</param>
+        /// <param name="doctorLevelCode">医生职称代码</param>
+        /// <param name="regDate">预约日期</param>
+        /// <param name="scheduleId">排班号</param>
+        /// <param name="periodId">分时号</param>
+        /// <param name="shiftCode">班别代码</param>
+        /// <param name="startTime">分时开始时间，格式：HH:MI</param>
+        /// <param name="endTime">分时结束时间，格式：HH:MI</param>
+        /// <param name="healthCardNo">患者健康卡号码</param>
+        /// <param name="patientId">患者唯一ID</param>
+        /// <param name="patientName">患者姓名</param>
+        /// <param name="idCardNo">患者身份证号码</param>
+        /// <param name="phone">联系电话</param>
+        /// <param name="orderType">预约方式 11 ----支付宝,10 ----微信</param>
+        /// <param name="orderTime">下订单时间，格式：YYYY-MM-DD HH24:MI:SS</param>
+        /// <param name="svObjectId">服务对象id，默认为普通患者</param>
+        /// <param name="fee">挂号费，单位分</param>
+        /// <param name="treatfee">诊疗费，单位分</param>
+        /// <param name="remark">备注</param>
+        /// <returns></returns>
+        public DataSet appointment_AddOrder(string orderId, string hospitalId, string deptId, string clinicUnitId, string doctorId,
+            string doctorLevelCode, string regDate, string scheduleId, string periodId, string shiftCode, string startTime, string endTime,
+            string healthCardNo, string patientId, string patientName, string idCardNo, string phone, string orderType, string orderTime,
+            string svObjectId, string fee, string treatfee, string remark)
+        {
+            DataSet ds = new DataSet();
+
+            #region 判断
+            if (string.IsNullOrEmpty(hospitalId))
+            {
+                PubConn.writeFileLog("医疗机构代码不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,医疗机构代码不能为空"));
+                return ds;
+            }
+            else
+            {
+                if (hospitalId != "42520068101")
+                {
+                    PubConn.writeFileLog("医疗机构代码错误");
+                    ds.Tables.Add(GetStatus("-1", "查询失败,医疗机构代码错误"));
+                    return ds;
+                }
+            }
+            if (string.IsNullOrEmpty(orderId))
+            {
+                PubConn.writeFileLog("移动服务的订单号不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,移动服务的订单号不能为空"));
+                return ds;
+            }
+            if (string.IsNullOrEmpty(deptId))
+            {
+                PubConn.writeFileLog("科室代码不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,科室代码不能为空"));
+                return ds;
+            }
+            if (string.IsNullOrEmpty(doctorId))
+            {
+                PubConn.writeFileLog("医生代码不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,医生代码不能为空"));
+                return ds;
+            }
+            if (string.IsNullOrEmpty(regDate))
+            {
+                PubConn.writeFileLog("预约日期不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,预约日期不能为空"));
+                return ds;
+            }
+            if (string.IsNullOrEmpty(shiftCode))
+            {
+                PubConn.writeFileLog("班别代码不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,班别代码不能为空"));
+                return ds;
+            }
+            if (string.IsNullOrEmpty(startTime))
+            {
+                PubConn.writeFileLog("分时开始时间不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,分时开始时间不能为空"));
+                return ds;
+            }
+            if (string.IsNullOrEmpty(endTime))
+            {
+                PubConn.writeFileLog("分时结束时间不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,分时结束时间不能为空"));
+                return ds;
+            }
+            if (string.IsNullOrEmpty(healthCardNo))
+            {
+                PubConn.writeFileLog("健康卡号不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,健康卡号不能为空"));
+                return ds;
+            }
+            if (string.IsNullOrEmpty(patientId))
+            {
+                PubConn.writeFileLog("患者唯一ID不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,患者唯一ID不能为空"));
+                return ds;
+            }
+            if (string.IsNullOrEmpty(patientName))
+            {
+                PubConn.writeFileLog("姓名不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,姓名不能为空"));
+                return ds;
+            }
+            if (string.IsNullOrEmpty(orderType))
+            {
+                PubConn.writeFileLog("支付方式不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,支付方式不能为空"));
+                return ds;
+            }
+            if (string.IsNullOrEmpty(orderTime))
+            {
+                PubConn.writeFileLog("下订单时间不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,下订单时间不能为空"));
+                return ds;
+            }
+            if (string.IsNullOrEmpty(fee))
+            {
+                PubConn.writeFileLog("挂号费不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,挂号费不能为空"));
+                return ds;
+            }
+            if (string.IsNullOrEmpty(treatfee))
+            {
+                PubConn.writeFileLog("诊疗费不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,诊疗费不能为空"));
+                return ds;
+            }
+            #endregion
+
+            DataTable dt2 = new DataTable();
+            dt2.Columns.Add("ROOMADDRESS");//诊室位置
+            dt2.Columns.Add("OPPATNO");//病历号
+            dt2.Columns.Add("QUEUENO");//排队号
+            dt2.Columns.Add("CLINICSEQ");//就诊流水号
+            dt2.Columns.Add("VALIDTIME");//锁号有效截至时间，格式：YYYY-MM-DD HH24:MI:SS
+            string strSql = null;
+            int count = 0;
+            try
+            {
+                //获取患者基本信息
+                strSql = @"SELECT * FROM PAT_MASTER_INDEX A WHERE A.PATIENT_ID='" + patientId + "'";
+                DataTable dtPatInfo = PubConn.Query(strSql, strHISConn).Tables[0];
+                if (dtPatInfo == null || dtPatInfo.Rows.Count == 0)
+                {
+                    PubConn.writeFileLog("不存在该患者信息！");
+                    ds.Tables.Add(GetStatus("-1", "查询失败,不存在该患者信息！"));
+                    return ds;
+                }
+                // --挂号方式
+                string operID = null;
+                string oper = null;
+                if (orderType == "11")
+                {
+                    //支付宝
+                    oper = "支付宝";
+                    operID = "8001";
+                }
+                else if (orderType == "10")
+                {
+                    //微信
+                    oper = "微信";
+                    operID = "8000";
+                }
+                else
+                {
+                    //移动
+                    oper = "移动";
+                    operID = "8002";
+                }
+                //获取挂号单元信息（CLINIC_LABEL）、号类信息（CLINIC_TYPR）
+                strSql = @"SELECT * FROM CLINIC_INDEX A WHERE A.CLINIC_DEPT='" + clinicUnitId + "'";
+                DataTable dtClinicIndex = PubConn.Query(strSql, strHISConn).Tables[0];
+                if (dtClinicIndex == null || dtClinicIndex.Rows.Count == 0)
+                {
+                    PubConn.writeFileLog("不存在该挂号单元！");
+                    ds.Tables.Add(GetStatus("-1", "查询失败,不存在该挂号单元！"));
+                    return ds;
+                }
+                //获取医生姓名
+                string doctorName = PubConn.GetSingle(@" SELECT A.USER_NAME FROM USERS A WHERE A.USER_ID='" + doctorId + "'",
+                    strHISConn).ToString();
+                //患者当天的就诊序号，使用his的序列
+                int newVisitNo = Convert.ToInt32(
+                    PubConn.GetSingle(@" SELECT VISIT_NO.NEXTVAL FROM DUAL",
+                    strHISConn).ToString());
+                //time_desc
+                string timeDesc = PubConn.GetSingle(@"
+                    SELECT A.TIME_INTERVAL_NAME FROM TIME_INTERVAL_DICT A WHERE A.TIME_INTERVAL_CODE='" + shiftCode + "'",
+                    strHISConn).ToString();
+                //获取预约排队号
+                string newSerialNo = PubConn.GetSingle(@" SELECT * FROM CLINIC_MASTER_APPOINT A 
+                    WHERE TO_CHAR(A.VISIT_DATE',YYYY-MM-DD')=TO_CHAR('" + regDate
+                    + "','YYYY-MM-DD') AND A.CLINIC_LABEL='" + dtClinicIndex.Rows[0]["CLINIC_LABEL"].ToString() +
+                    "' AND A.TIME_DESC='" + timeDesc + "'",
+                    strHISConn).ToString();
+                //插入clinic_master_appoint数据
+                strSql = @" INSERT INTO CLINIC_MASTER_APPOINT
+                                  (VISIT_DATE,
+                                   VISIT_NO,
+                                   CLINIC_LABEL,
+                                   VISIT_TIME_DESC,
+                                   PATIENT_ID,
+                                   NAME,
+                                   NAME_PHONETIC,
+                                   SEX,
+                                   AGE,
+                                   IDENTITY,
+                                   CHARGE_TYPE,
+                                   CLINIC_TYPE,
+                                   FIRST_VISIT_INDICATOR,
+                                   VISIT_DEPT,
+                                   DOCTOR,
+                                   MR_PROVIDED_INDICATOR,
+                                   REGISTERING_DATE,
+                                   REGIST_FEE,
+                                   CLINIC_FEE,
+                                   OTHER_FEE,
+                                   CLINIC_CHARGE,
+                                   OPERATOR,
+                                   PAY_WAY,
+                                   RCPT_NO, --收据号（将此作为微信端的订单号） 
+                                   SERIAL_NO 
+                                   )
+                                VALUES
+                                  (TO_DATE('" + regDate + "', 'YYYY-MM-DD'),'" +
+                                             newVisitNo + "','" +
+                                             dtClinicIndex.Rows[0]["CLINIC_LABEL"].ToString() + "','" +
+                                             timeDesc + "','" +
+                                             healthCardNo + "','" +
+                                             patientName + "','" +
+                                             "" + "','" +
+                                             dtPatInfo.Rows[0]["SEX"].ToString() + "','" +
+                                             (DateTime.Now.Year - Convert.ToDateTime(dtPatInfo.Rows[0]["DATE_OF_BIRTH"]).Year) + "','" +
+                                             "地方" + "','" + //IDENTITY
+                                             dtPatInfo.Rows[0]["CHARGE_TYPE"].ToString() + "','" +
+                                             dtClinicIndex.Rows[0]["CLINIC_TYPE"].ToString() + "','" +
+                                             0 + "','" +
+                                             clinicUnitId + "','" +
+                                             doctorName + "','" +
+                                             0 + "','" +
+                                             "sysdate" + "','" +
+                                             fee + "','" +
+                                             treatfee + "','" +
+                                             0 + "','" +
+                                             (Convert.ToInt32(fee) + Convert.ToInt32(treatfee)) + "','" +
+                                             operID + "','" +
+                                             oper + "','" +
+                                             orderId + "','" +
+                                             timeDesc + "')";
+                //int result = PubConn.ExecuteSql(strSql, strHISConn);
+                if (PubConn.ExecuteSql(strSql, strHISConn) != 1)
+                {
+                    PubConn.writeFileLog("预约失败！");
+                    ds.Tables.Add(GetStatus("-1", "查询失败,预约失败！"));
+                    return ds;
+                }
+                //更新号源
+                strSql = @"UPDATE CLINIC_FOR_REGIST C
+                                   SET C.CURRENT_NO = C.CURRENT_NO + 1
+                                 WHERE C.CLINIC_DATE = TO_DATE('" + regDate +
+                                  "', 'YYYY-MM-DD') AND C.CLINIC_LABEL IN (SELECT CLINIC_LABEL FROM CLINIC_INDEX WHERE CLINIC_DEPT = '"
+                                  + clinicUnitId + "')";
+                if (PubConn.ExecuteSql(strSql, strHISConn) != 1)
+                {
+                    PubConn.writeFileLog("更新号源失败！");
+                    ds.Tables.Add(GetStatus("-1", "查询失败,更新号源失败！"));
+                    return ds;
+                }
+                DataRow drNew = dt2.NewRow();
+                drNew[0] = orderId;
+                drNew[1] = patientId;
+                drNew[2] = timeDesc;
+                drNew[3] = newVisitNo;
+                drNew[4] = "";
+
+
+                dt2.Rows.Add(drNew);
+                ds.Tables.Add(GetStatus("0", "预约成功"));
+                ds.Tables.Add(dt2.Copy());
+            }
+            catch (Exception ex)
+            {
+                PubConn.writeFileLog(ex.Message);
+                ds.Tables.Add(GetStatus("-1", "预约失败," + ex.Message));
+                ds.Tables.Add(dt2);
+            }
+            return ds;
+        }
+
+
+        /// <summary>
+        /// 预约支付
+        /// </summary>
+        /// <param name="hospitalId">医院代码</param>
+        /// <param name="orderId">移动订单号</param>
+        /// <param name="tradeNo">第三方支付的交易流水号</param>
+        /// <param name="healthCardNo">用户健康卡号码</param>
+        /// <param name="patientId">患者唯一ID</param>
+        /// <param name="bookingNo">HIS系统生成的预约订单号</param>
+        /// <param name="svObjectId">服务对象id，默认为普通患者</param>
+        /// <param name="medicareSettleLogId">医保预结算参数(在线医保为json格式，格式如样例，目前仅支持线上医保结算)</param>
+        /// <param name="operatorId">操作员工号</param>
+        /// <param name="machineId">设备代码（针对自助设备）</param>
+        /// <param name="payAmout">支付金额(单位“分”)</param>
+        /// <param name="recPayAmout">统筹金额：分</param>
+        /// <param name="totalPayAmout">总金额：分</param>
+        /// <param name="payMode">支付方式具体编码定义见2.7支付方式</param>
+        /// <param name="payTime">交易时间，格式：YYYY-MM-DD HI24:MI:SS</param>
+        /// <returns></returns>
+        public DataSet appointment_Pay(string hospitalId, string orderId, string tradeNo, string healthCardNo, string patientId,
+            string bookingNo, string svObjectId, string medicareSettleLogId, string operatorId, string machineId, string payAmout,
+            string recPayAmout, string totalPayAmout, string payMode, string payTime)
+        {
+            DataSet ds = new DataSet();
+
+            #region 验证
+            if (string.IsNullOrEmpty(hospitalId))
+            {
+                PubConn.writeFileLog("医疗机构代码不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,医疗机构代码不能为空"));
+                return ds;
+            }
+            else
+            {
+                if (hospitalId != "42520068101")
+                {
+                    PubConn.writeFileLog("医疗机构代码错误");
+                    ds.Tables.Add(GetStatus("-1", "查询失败,医疗机构代码错误"));
+                    return ds;
+                }
+            }
+            if (string.IsNullOrEmpty(orderId))
+            {
+                PubConn.writeFileLog("移动订单号不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,移动订单号不能为空"));
+                return ds;
+            }
+            if (string.IsNullOrEmpty(tradeNo))
+            {
+                PubConn.writeFileLog("第三方支付的交易流水号不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,第三方支付的交易流水号不能为空"));
+                return ds;
+            }
+            if (string.IsNullOrEmpty(healthCardNo))
+            {
+                PubConn.writeFileLog("用户健康卡号码不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,用户健康卡号码不能为空"));
+                return ds;
+            }
+            if (string.IsNullOrEmpty(patientId))
+            {
+                PubConn.writeFileLog("患者唯一ID不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,患者唯一ID不能为空"));
+                return ds;
+            }
+            if (string.IsNullOrEmpty(bookingNo))
+            {
+                PubConn.writeFileLog("HIS预约订单号不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,HIS预约订单号不能为空"));
+                return ds;
+            }
+
+            if (string.IsNullOrEmpty(operatorId))
+            {
+                PubConn.writeFileLog("操作员工号不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,操作员工号不能为空"));
+                return ds;
+            }
+            if (string.IsNullOrEmpty(payAmout))
+            {
+                PubConn.writeFileLog("支付金额不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,支付金额不能为空"));
+                return ds;
+            }
+            if (string.IsNullOrEmpty(payMode))
+            {
+                PubConn.writeFileLog("支付方式不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,支付方式不能为空"));
+                return ds;
+            }
+            if (string.IsNullOrEmpty(payTime))
+            {
+                PubConn.writeFileLog("支付方式不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,支付方式不能为空"));
+                return ds;
+            }
+            #endregion
+
+            DataTable dt2 = new DataTable();
+            dt2.Columns.Add("ROOMADDRESS");
+            dt2.Columns.Add("OPPATNO");
+            dt2.Columns.Add("QUEUENO");
+            dt2.Columns.Add("CLINICSEQ");
+            string strSql = null;
+
+            try
+            {
+                //获取预约记录
+                DataTable dtAppoint = PubConn.Query(@"SELECT A.*
+                                                          FROM CLINIC_MASTER_APPOINT A
+                                                         WHERE A.RCPT_NO ='" + orderId + "'", strHISConn).Tables[0];
+                if (dtAppoint == null || dtAppoint.Rows.Count == 0)
+                {
+                    PubConn.writeFileLog("预约信息不存在");
+                    ds.Tables.Add(GetStatus("-1", "查询失败,预约信息不存在"));
+                    return ds;
+                }
+                //string visitDate = dtAppoint.Rows[0]["VISIT_DATE"].ToString();
+                //string clinicLable = dtAppoint.Rows[0]["CLINIC_LABEL"].ToString();
+                //写入移动交易记录表
+                strSql = @" INSERT INTO BASEINFO.TRADE_RECORD
+                            (TRADE_NO, TRADE_DATE, RCPT_NO, ORDER_ID, PAY_MODE, COSTS)
+                          VALUES
+                            ('" + tradeNo +
+                               "', TO_DATE('" + payTime + "', 'YYYY-MM-DD HH24:MI:SS'),'" +
+                               orderId + "','" +
+                             orderId + "','" +
+                             payMode + "','" +
+                             "TO_NUMBER('" + payAmout + "') / 100)";
+                if (PubConn.ExecuteSql(strSql, strHISConn) != 1)
+                {
+                    PubConn.writeFileLog("写入移动交易记录表失败");
+                    ds.Tables.Add(GetStatus("-1", "查询失败,写入移动交易记录表失败"));
+                    return ds;
+                }
+                //获取一个号别下的最大序号
+                int maxSerialNo = Convert.ToInt32(PubConn.GetSingle(@"SELECT NVL(MAX(SERIAL_NO), 0)
+                                                            FROM CLINIC_MASTER
+                                                           WHERE CLINIC_LABEL = '" + dtAppoint.Rows[0]["CLINIC_LABEL"].ToString() +
+                                                             "' AND TO_CHAR(VISIT_DATE,'YYYY-MM-DD') = TO_CHAR('" + dtAppoint.Rows[0]["VISIT_DATE"].ToString() +
+                                                             "','YYYY-MM-DD')", strHISConn)) + 1;
+                //插入就诊表clinic_master
+                strSql = @"INSERT INTO CLINIC_MASTER
+                                      (VISIT_DATE,
+                                       VISIT_NO,
+                                       CLINIC_LABEL,
+                                       VISIT_TIME_DESC,
+                                       SERIAL_NO,
+                                       PATIENT_ID,
+                                       NAME,
+                                       NAME_PHONETIC,
+                                       SEX,
+                                       AGE,
+                                       IDENTITY,
+                                       CHARGE_TYPE,
+                                       CLINIC_TYPE,
+                                       FIRST_VISIT_INDICATOR,
+                                       VISIT_DEPT,
+                                       DOCTOR,
+                                       MR_PROVIDED_INDICATOR,
+                                       REGISTRATION_STATUS,
+                                       REGISTERING_DATE,
+                                       REGIST_FEE,
+                                       CLINIC_FEE,
+                                       OTHER_FEE,
+                                       CLINIC_CHARGE,
+                                       OPERATOR,
+                                       PAY_WAY,
+                                       RCPT_NO)
+                                      SELECT A.VISIT_DATE,
+                                             A.VISIT_NO,
+                                             A.CLINIC_LABEL,
+                                             A.VISIT_TIME_DESC,
+                                             '" + maxSerialNo +
+                                               @"'SERIAL_NO,
+                                             A.PATIENT_ID,
+                                             A.NAME,
+                                             A.NAME_PHONETIC,
+                                             A.SEX,
+                                             A.AGE,
+                                             A.IDENTITY,
+                                             A.CHARGE_TYPE,
+                                             A.CLINIC_TYPE,
+                                             A.FIRST_VISIT_INDICATOR,
+                                             A.VISIT_DEPT,
+                                             A.DOCTOR,
+                                             A.MR_PROVIDED_INDICATOR,
+                                             '1',
+                                             A.REGISTERING_DATE,
+                                             A.REGIST_FEE,
+                                             A.CLINIC_FEE,
+                                             A.OTHER_FEE,
+                                             A.CLINIC_CHARGE,
+                                             A.OPERATOR,
+                                             A.PAY_WAY,
+                                             '" + orderId +
+                                                @"' ORDERID
+                                        FROM CLINIC_MASTER_APPOINT A
+                                       WHERE A.RCPT_NO = '" + orderId + "'";
+                if (PubConn.ExecuteSql(strSql, strHISConn) != 1)
+                {
+                    PubConn.writeFileLog("预约支付失败！");
+                    ds.Tables.Add(GetStatus("-1", "预约支付失败!"));
+                    ds.Tables.Add(dt2);
+                }
+                //就诊流水号
+                string clinicSeq = dtAppoint.Rows[0]["VISIT_DATE"].ToString() + dtAppoint.Rows[0]["VISIT_NO"].ToString() + maxSerialNo;
+                // -- 记录交易流水号(预约挂号表中的trans_no)、就诊流水号clinicSeq、费用信息和付费状态
+                strSql = @"UPDATE CLINIC_MASTER_APPOINT A
+                                   SET A.TRANS_NO            = '" + tradeNo +
+                                       "', A.CLINIC_SEQ          = '" + clinicSeq +
+                                       "', A.INSUR_FEE           = '" + payAmout +
+                                       "', A.REGISTRATION_STATUS = '1' WHERE A.RCPT_NO = '" + orderId + "'";
+                if (PubConn.ExecuteSql(strSql, strHISConn) != 1)
+                {
+                    PubConn.writeFileLog("记录交易流水号等信息失败！");
+                    ds.Tables.Add(GetStatus("-1", "记录交易流水号等信息失败！"));
+                    ds.Tables.Add(dt2);
+                }
+
+                DataRow drNew = dt2.NewRow();
+                drNew[0] = "";
+                drNew[1] = patientId;
+                drNew[2] = maxSerialNo;
+                drNew[3] = clinicSeq;
+                dt2.Rows.Add(drNew);
+
+                ds.Tables.Add(GetStatus("0", "取消预约成功"));
+                ds.Tables.Add(dt2.Copy());
+            }
+            catch (Exception ex)
+            {
+                PubConn.writeFileLog(ex.Message);
+                ds.Tables.Add(GetStatus("-1", "取消预约失败," + ex.Message));
+                ds.Tables.Add(dt2);
+            }
+            return ds;
+        }
+
+
+        /// <summary>
+        /// 取消预约
+        /// </summary>
+        /// <param name="orderId">移动订单号</param>
+        /// <param name="healthCardNo">用户健康卡号码</param>
+        /// <param name="patientId">患者唯一ID</param>
+        /// <param name="scheduleId">排班号</param>
+        /// <param name="periodId">分时号</param>
+        /// <param name="bookingNo">HIS预约订单号</param>
+        /// <param name="cancelTime">取消时间，格式：YYYY-MM-DD HH24:MI:SS</param>
+        /// <param name="cancelReason">取消原因</param>
+        /// <returns></returns>
+        public DataSet appointment_CancelOrder(string orderId, string healthCardNo, string patientId, string scheduleId,
+            string periodId, string bookingNo, string cancelTime, string cancelReason)
+        {
+            DataSet ds = new DataSet();
+            if (string.IsNullOrEmpty(orderId))
+            {
+                PubConn.writeFileLog("移动订单号不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,移动订单号不能为空"));
+                return ds;
+            }
+            if (string.IsNullOrEmpty(healthCardNo))
+            {
+                PubConn.writeFileLog("用户健康卡号码不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,用户健康卡号码不能为空"));
+                return ds;
+            }
+            if (string.IsNullOrEmpty(patientId))
+            {
+                PubConn.writeFileLog("患者唯一ID不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,患者唯一ID不能为空"));
+                return ds;
+            }
+            if (string.IsNullOrEmpty(bookingNo))
+            {
+                PubConn.writeFileLog("HIS预约订单号不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,HIS预约订单号不能为空"));
+                return ds;
+            }
+            if (string.IsNullOrEmpty(cancelTime))
+            {
+                PubConn.writeFileLog("取消时间不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,取消时间不能为空"));
+                return ds;
+            }
+
+            DataTable dt2 = new DataTable();
+            string strSql = @"";
+
+            try
+            {
+                // 获取订单信息 
+                strSql = @"SELECT A.CLINIC_LABEL, A.VISIT_TIME_DESC, A.VISIT_DATE
+                              FROM CLINIC_MASTER_APPOINT A
+                             WHERE A.RCPT_NO = '" + orderId + "'";
+                dt2 = PubConn.Query(strSql, strHISConn).Tables[0];
+                if (dt2 == null || dt2.Rows.Count == 0)
+                {
+                    PubConn.writeFileLog("没有订单:" + orderId + "的信息");
+                    ds.Tables.Add(GetStatus("-1", "查询失败,没有订单:" + orderId + "的信息"));
+                    return ds;
+                }
+                //更新号源
+                strSql = @" UPDATE OUTPADM.CLINIC_FOR_REGIST T
+                                   SET T.CURRENT_NO = T.CURRENT_NO - 1
+                                 WHERE TO_CHAR(T.CLINIC_DATE,'YYYY-MM-DD') = TO_CHAR('" + dt2.Rows[0]["VISIT_DATE"].ToString() +
+                                   "','YYYY-MM-DD') AND T.CLINIC_LABEL ='" + dt2.Rows[0]["CLINIC_LABEL"].ToString() +
+                                   "' AND T.TIME_DESC = '" + dt2.Rows[0]["VISIT_TIME_DESC"].ToString() + "'";
+                if (PubConn.ExecuteSql(strSql, strHISConn) != 1)
+                {
+                    PubConn.writeFileLog("更新号源失败！");
+                    ds.Tables.Add(GetStatus("-1", "查询失败,更新号源失败！"));
+                    return ds;
+                }
+                //处理完后删除未支付的订单数据
+                strSql = @" DELETE FROM CLINIC_MASTER_APPOINT A
+                                     WHERE TO_CHAR(A.VISIT_DATE,'YYYY-MM-DD') = TO_CHAR('" + dt2.Rows[0]["VISIT_DATE"].ToString() +
+                                       "','YYYY-MM-DD') AND A.PATIENT_ID = '" + patientId +
+                                       "' AND A.RCPT_NO =  '" + orderId + "'";
+                if (PubConn.ExecuteSql(strSql, strHISConn) != 1)
+                {
+                    PubConn.writeFileLog("删除未支付的订单失败！");
+                    ds.Tables.Add(GetStatus("-1", "查询失败,删除未支付的订单失败！"));
+                    return ds;
+                }
+
+
+
+                ds.Tables.Add(GetStatus("0", "取消预约成功"));
+                //ds.Tables.Add(dt2.Copy());
+            }
+            catch (Exception ex)
+            {
+                PubConn.writeFileLog(ex.Message);
+                ds.Tables.Add(GetStatus("-1", "取消预约失败," + ex.Message));
+                ds.Tables.Add(dt2);
+            }
+            return ds;
+        }
+
+        /// <summary>
+        /// 挂号
+        /// </summary>
+        /// <param name="lockId">号源锁定ID</param>
+        /// <param name="infoSeq">HIS锁号ID</param>
+        /// <param name="orderId">移动订单号</param>
+        /// <param name="hospitalId">医院代码</param>
+        /// <param name="healthCardNo">患者健康卡号码</param>
+        /// <param name="patientId">患者唯一ID</param>
+        /// <param name="orderType">挂号方式 11 ----支付宝，10 ----微信</param>
+        /// <param name="orderTime">下订单时间，格式：YYYY-MM-DD HH24:MI:SS</param>
+        /// <param name="svObjectId">服务对象id，默认为普通患者</param>
+        /// <param name="medicareSettleLogId">医保预结算参数(在线医保为json格式，格式如样例，目前仅支持线上医保结算)</param>
+        /// <param name="operatorId">操作员工号</param>
+        /// <param name="machineId">设备代码（针对自助设备）</param>
+        /// <param name="payAmout">支付金额(单位“分”)</param>
+        /// <param name="recPayAmout">统筹金额：分</param>
+        /// <param name="totalPayAmout">总金额：分</param>
+        /// <param name="payMode">支付方式：具体编码定义见2.7支付方式</param>
+        /// <param name="tradeNo">交易流水号</param>
+        /// <returns></returns>
+        public DataSet register_Pay(string lockId, string infoSeq, string orderId, string hospitalId, string healthCardNo, string patientId,
+            string orderType, string orderTime, string svObjectId, string medicareSettleLogId, string operatorId, string machineId,
+            string payAmout, string recPayAmout, string totalPayAmout, string payMode, string tradeNo)
+        {
+            DataSet ds = new DataSet();
+
+            #region 判断
+            if (string.IsNullOrEmpty(lockId))
+            {
+                PubConn.writeFileLog("号源锁定ID不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,号源锁定ID不能为空"));
+                return ds;
+            }
+            if (string.IsNullOrEmpty(hospitalId))
+            {
+                PubConn.writeFileLog("医疗机构代码不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,医疗机构代码不能为空"));
+                return ds;
+            }
+            else
+            {
+                if (hospitalId != "42520068101")
+                {
+                    PubConn.writeFileLog("医疗机构代码错误");
+                    ds.Tables.Add(GetStatus("-1", "查询失败,医疗机构代码错误"));
+                    return ds;
+                }
+            }
+            if (string.IsNullOrEmpty(orderId))
+            {
+                PubConn.writeFileLog("移动服务的订单号不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,移动服务的订单号不能为空"));
+                return ds;
+            }
+            if (string.IsNullOrEmpty(healthCardNo))
+            {
+                PubConn.writeFileLog("健康卡号不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,健康卡号不能为空"));
+                return ds;
+            }
+            if (string.IsNullOrEmpty(patientId))
+            {
+                PubConn.writeFileLog("患者唯一ID不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,患者唯一ID不能为空"));
+                return ds;
+            }
+            if (string.IsNullOrEmpty(orderType))
+            {
+                PubConn.writeFileLog("支付方式不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,支付方式不能为空"));
+                return ds;
+            }
+            if (string.IsNullOrEmpty(orderTime))
+            {
+                PubConn.writeFileLog("下订单时间不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,下订单时间不能为空"));
+                return ds;
+            }
+            if (string.IsNullOrEmpty(operatorId))
+            {
+                PubConn.writeFileLog("操作员工号不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,操作员工号不能为空"));
+                return ds;
+            }
+            if (string.IsNullOrEmpty(payAmout))
+            {
+                PubConn.writeFileLog("支付金额不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,支付金额不能为空"));
+                return ds;
+            }
+            if (string.IsNullOrEmpty(totalPayAmout))
+            {
+                PubConn.writeFileLog("总金额不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,总金额不能为空"));
+                return ds;
+            }
+            if (string.IsNullOrEmpty(payMode))
+            {
+                PubConn.writeFileLog("支付方式不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,支付方式不能为空"));
+                return ds;
+            }
+            if (string.IsNullOrEmpty(tradeNo))
+            {
+                PubConn.writeFileLog("交易流水号不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,交易流水号不能为空"));
+                return ds;
+            }
+            #endregion
+
+            DataTable dt2 = new DataTable();
+            dt2.Columns.Add("ROOMADDRESS");//诊室位置
+            dt2.Columns.Add("OPPATNO");//病历号
+            dt2.Columns.Add("QUEUENO");//排队号
+            dt2.Columns.Add("CLINICSEQ");//就诊流水号
+            dt2.Columns.Add("CLINICTIME");//预计就诊时间，格式：YYYY-MM-DD HH24:MI:SS
+
+            string strSql = null;
+            int count = 0;
+            try
+            {
+                // --挂号方式
+                string operID = null;
+                string oper = null;
+                if (orderType == "11")
+                {
+                    //支付宝
+                    oper = "支付宝";
+                    operID = "8001";
+                }
+                else if (orderType == "10")
+                {
+                    //微信
+                    oper = "微信";
+                    operID = "8000";
+                }
+                else
+                {
+                    //移动
+                    oper = "移动";
+                    operID = "8002";
+                }
+                //获取预约记录
+                DataTable dtAppoint = PubConn.Query(@"SELECT A.*
+                                                          FROM CLINIC_MASTER_APPOINT A
+                                                         WHERE A.RCPT_NO ='" + orderId + "'", strHISConn).Tables[0];
+                if (dtAppoint == null || dtAppoint.Rows.Count == 0)
+                {
+                    PubConn.writeFileLog("预约信息不存在");
+                    ds.Tables.Add(GetStatus("-1", "查询失败,预约信息不存在"));
+                    return ds;
+                }
+                //患者当天的就诊序号，使用his的序列
+                int maxVisitNo = Convert.ToInt32(
+                    PubConn.GetSingle(@"  SELECT MAX(VISIT_NO)
+                                              FROM CLINIC_MASTER
+                                             WHERE TO_CHAR(VISIT_DATE,'YYYY-MM-DD') =TO_CHAR('" +
+                                              dtAppoint.Rows[0]["VISIT_DATE"].ToString() + "''YYYY-MM-DD')",
+                    strHISConn).ToString());
+                //获取排队号
+                string maxSerialNo = PubConn.GetSingle(@" SELECT * FROM CLINIC_MASTER A 
+                                            WHERE TO_CHAR(A.VISIT_DATE,'YYYY-MM-DD')=TO_CHAR('" + dtAppoint.Rows[0]["VISIT_DATE"].ToString()
+                                            + "','YYYY-MM-DD') AND A.CLINIC_LABEL='" + dtAppoint.Rows[0]["CLINIC_LABEL"].ToString() +
+                                            "' AND A.TIME_DESC='" + dtAppoint.Rows[0]["VISIT_TIME_DESC"].ToString() + "'",
+                                            strHISConn).ToString();
+                //插入clinic_master_appoint数据
+                strSql = @" INSERT INTO CLINIC_MASTER
+                                      (VISIT_DATE,
+                                       VISIT_NO,
+                                       CLINIC_LABEL,
+                                       VISIT_TIME_DESC,
+                                       SERIAL_NO,
+                                       PATIENT_ID,
+                                       NAME,
+                                       NAME_PHONETIC,
+                                       SEX,
+                                       AGE,
+                                       IDENTITY,
+                                       CHARGE_TYPE,
+                                       CLINIC_TYPE,
+                                       FIRST_VISIT_INDICATOR,
+                                       VISIT_DEPT,
+                                       DOCTOR,
+                                       MR_PROVIDED_INDICATOR,
+                                       REGISTRATION_STATUS,
+                                       REGISTERING_DATE,
+                                       REGIST_FEE,
+                                       CLINIC_FEE,
+                                       OTHER_FEE,
+                                       CLINIC_CHARGE,
+                                       OPERATOR,
+                                       PAY_WAY,
+                                       RCPT_NO)
+                                      SELECT A.VISIT_DATE,
+                                             A.VISIT_NO,
+                                             A.CLINIC_LABEL,
+                                             A.VISIT_TIME_DESC,
+                                             '" + maxSerialNo +
+                                               @"' SERIAL_NO,
+                                             A.PATIENT_ID,
+                                             A.NAME,
+                                             A.NAME_PHONETIC,
+                                             A.SEX,
+                                             A.AGE,
+                                             A.IDENTITY,
+                                             A.CHARGE_TYPE,
+                                             A.CLINIC_TYPE,
+                                             A.FIRST_VISIT_INDICATOR,
+                                             A.VISIT_DEPT,
+                                             A.DOCTOR,
+                                             A.MR_PROVIDED_INDICATOR,
+                                             '1',
+                                             A.REGISTERING_DATE,
+                                             A.REGIST_FEE,
+                                             A.CLINIC_FEE,
+                                             A.OTHER_FEE,
+                                             A.CLINIC_CHARGE,
+                                             '" + oper +
+                                               @"'OPERNAME,
+                                              '" + oper +
+                                               @"' PAYWAY,
+                                              '" + orderId +
+                                               @"'ORDERID
+                                        FROM CLINIC_MASTER_APPOINT A
+                                       WHERE A.RCPT_NO = '" + orderId + "'";
+                //int result = PubConn.ExecuteSql(strSql, strHISConn);
+                if (PubConn.ExecuteSql(strSql, strHISConn) != 1)
+                {
+                    PubConn.writeFileLog("挂号失败！");
+                    ds.Tables.Add(GetStatus("-1", "查询失败,挂号失败！"));
+                    return ds;
+                }
+                //就诊流水号
+                string clinicSeq = dtAppoint.Rows[0]["VISIT_DATE"].ToString() + dtAppoint.Rows[0]["VISIT_NO"].ToString() + maxSerialNo;
+                //记录就诊流水号
+                strSql = @" UPDATE CLINIC_MASTER_APPOINT A
+                                 SET A.CLINIC_SEQ          = '" + clinicSeq +
+                                     "', A.OPERATOR            = '" + operID +
+                                     "', A.PAY_WAY             = '" + oper +
+                                     "', A.REGISTRATION_STATUS = '1' WHERE A.RCPT_NO = '" + orderId + "';";
+                if (PubConn.ExecuteSql(strSql, strHISConn) != 1)
+                {
+                    PubConn.writeFileLog("记录就诊流水号失败！");
+                    ds.Tables.Add(GetStatus("-1", "查询失败,记录就诊流水号失败！"));
+                    return ds;
+                }
+                DataRow drNew = dt2.NewRow();
+                drNew[0] = orderId;
+                drNew[1] = patientId;
+                drNew[2] = maxSerialNo;
+                drNew[3] = clinicSeq;
+                drNew[4] = dtAppoint.Rows[0]["VISIT_DATE"].ToString();
+
+
+                dt2.Rows.Add(drNew);
+                ds.Tables.Add(GetStatus("0", "挂号成功"));
+                ds.Tables.Add(dt2.Copy());
+            }
+            catch (Exception ex)
+            {
+                PubConn.writeFileLog(ex.Message);
+                ds.Tables.Add(GetStatus("-1", "挂号失败," + ex.Message));
+                ds.Tables.Add(dt2);
+            }
+            return ds;
+        }
+
+
+        /// <summary>
+        /// 退号
+        /// </summary>
+        /// <param name="healthCardNo">用户健康卡号码</param>
+        /// <param name="patientId">患者唯一ID</param>
+        /// <param name="orderId">移动订单号</param>
+        /// <param name="scheduleId">排班号</param>
+        /// <param name="periodId">分时号</param>
+        /// <param name="clinicSeq">就诊流水号</param>
+        /// <param name="tradeNo">第三方支付平台交易流水号</param>
+        /// <param name="medicareSettleLogId">医保预结算参数</param>
+        /// <param name="operatorId">操作员工号</param>
+        /// <param name="machineId">设备代码（针对自助设备）</param>
+        /// <param name="refundFee">退费金额(单位“分”)</param>
+        /// <param name="refundTime">退费时间，格式：YYYY-MM-DD HI24:MI:SS</param>
+        /// <param name="refundReason">退费原因</param>
+        /// <returns></returns>
+        public DataSet appointment_ReturnPay(string healthCardNo, string patientId, string orderId, string scheduleId, string periodId,
+            string clinicSeq, string tradeNo, string medicareSettleLogId, string operatorId, string machineId, string refundFee,
+            string refundTime, string refundReason)
+        {
+            DataSet ds = new DataSet();
+
+            #region 判断
+            if (string.IsNullOrEmpty(orderId))
+            {
+                PubConn.writeFileLog("移动服务的订单号不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,移动服务的订单号不能为空"));
+                return ds;
+            }
+            if (string.IsNullOrEmpty(healthCardNo))
+            {
+                PubConn.writeFileLog("健康卡号不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,健康卡号不能为空"));
+                return ds;
+            }
+            if (string.IsNullOrEmpty(patientId))
+            {
+                PubConn.writeFileLog("患者唯一ID不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,患者唯一ID不能为空"));
+                return ds;
+            }
+            if (string.IsNullOrEmpty(clinicSeq))
+            {
+                PubConn.writeFileLog("就诊流水号不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,就诊流水号不能为空"));
+                return ds;
+            }
+            if (string.IsNullOrEmpty(tradeNo))
+            {
+                PubConn.writeFileLog("交易流水号不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,交易流水号不能为空"));
+                return ds;
+            }
+            if (string.IsNullOrEmpty(operatorId))
+            {
+                PubConn.writeFileLog("操作员工号不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,操作员工号不能为空"));
+                return ds;
+            }
+            if (string.IsNullOrEmpty(refundFee))
+            {
+                PubConn.writeFileLog("退费金额不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,退费金额不能为空"));
+                return ds;
+            }
+            if (string.IsNullOrEmpty(refundTime))
+            {
+                PubConn.writeFileLog("退费时间不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,退费时间不能为空"));
+                return ds;
+            }
+            #endregion
+
+            DataTable dt2 = new DataTable();
+
+            string strSql = null;
+            try
+            {
+                //获取支付方式
+                string payMode = PubConn.GetSingle(@" SELECT PAY_MODE
+                                                              FROM TRADE_RECORD
+                                                             WHERE ORDER_ID = '" + orderId + "'", strHISConn).ToString();
+                //存入交易记录表
+                //首先判断是否已经退号
+                int count = PubConn.GetCount(@" SELECT COUNT(*)
+                                                  FROM CLINIC_MASTER_APPOINT A
+                                                 WHERE A.RCPT_NO = '" + orderId +
+                                                   "' AND A.PATIENT_ID = '" + patientId + "' AND A.RETURNED_DATE IS NOT NULL;",
+                                                   strHISConn);
+                if (count > 0)
+                {
+                    PubConn.writeFileLog("该号已退号");
+                    ds.Tables.Add(GetStatus("-1", "查询失败,该号已退号"));
+                    return ds;
+                }
+                strSql = @" INSERT INTO BASEINFO.TRADE_RECORD
+                                      (TRADE_NO, TRADE_DATE, RCPT_NO, ORDER_ID, PAY_MODE, COSTS)
+                                    VALUES
+                                      ('" + tradeNo +
+                                       "',TO_DATE('" + refundTime +
+                                       "', 'YYYY-MM-DD HH24:MI:SS'),'" + orderId +
+                                       "','" + orderId +
+                                       "','" + payMode +
+                                        "',-TO_NUMBER('" + refundFee + "') / 100)";
+                if (PubConn.ExecuteSql(strSql, strHISConn) != 1)
+                {
+                    PubConn.writeFileLog("插入交易记录失败！");
+                    ds.Tables.Add(GetStatus("-1", "查询失败,插入交易记录失败！"));
+                    return ds;
+                }
+                //获取预约记录
+                DataTable dtAppoint = PubConn.Query(@"SELECT A.*
+                                                          FROM CLINIC_MASTER_APPOINT A
+                                                         WHERE A.RCPT_NO ='" + orderId + "'", strHISConn).Tables[0];
+                if (dtAppoint == null || dtAppoint.Rows.Count == 0)
+                {
+                    PubConn.writeFileLog("预约信息不存在");
+                    ds.Tables.Add(GetStatus("-1", "查询失败,预约信息不存在"));
+                    return ds;
+                }
+                //回收号源
+                strSql = @" UPDATE OUTPADM.CLINIC_FOR_REGIST T
+                                     SET T.CURRENT_NO = T.CURRENT_NO - 1 
+                                   WHERE TO_CHAR(T.CLINIC_DATE,'YYYY-MM-DD') = TO_CHAR('" + dtAppoint.Rows[0]["VISIT_DATE"].ToString() +
+                                     "','YYYY-MM-DD') AND T.CLINIC_LABEL = '" + dtAppoint.Rows[0]["CLINIC_LABEL"].ToString() +
+                                     "' AND T.TIME_DESC = '" + dtAppoint.Rows[0]["VISIT_TIME_DESC"].ToString() + "'";
+                if (PubConn.ExecuteSql(strSql, strHISConn) != 1)
+                {
+                    PubConn.writeFileLog("回收号源失败！");
+                    ds.Tables.Add(GetStatus("-1", "查询失败,回收号源失败！"));
+                    return ds;
+                }
+
+                //插入clinic_master_appoint数据
+                strSql = @" UPDATE CLINIC_MASTER T
+                                     SET T.RETURNED_DATE = TO_DATE('" + refundTime +
+                                         @"','YYYY-MM-DD HH24:MI:SS'),T.REGISTRATION_STATUS = '3',
+                                         T.RETURNED_OPERATOR   = T.PAY_WAY
+                                   WHERE T.PATIENT_ID = '" + patientId +
+                                     "' AND T.RCPT_NO = '" + orderId +
+                                     "' AND T.RETURNED_DATE IS NULL;";
+                //int result = PubConn.ExecuteSql(strSql, strHISConn);
+                if (PubConn.ExecuteSql(strSql, strHISConn) != 1)
+                {
+                    PubConn.writeFileLog("退挂号失败！");
+                    ds.Tables.Add(GetStatus("-1", "退挂号失败！"));
+                    return ds;
+                }
+                ds.Tables.Add(GetStatus("0", "退挂号成功"));
+                //ds.Tables.Add(dt2.Copy());
+            }
+            catch (Exception ex)
+            {
+                PubConn.writeFileLog(ex.Message);
+                ds.Tables.Add(GetStatus("-1", "退挂号失败," + ex.Message));
+                ds.Tables.Add(dt2);
+            }
+            return ds;
+        }
+
 
 
         /// <summary>
@@ -1247,6 +2317,156 @@ namespace KingdeeApp
                               A.ORDERED_BY_DOCTOR,
                               DEPT_DICT.DEPT_NAME,
                               C.ORDER_ID";
+            try
+            {
+                dt2 = PubConn.Query(strSql, strHISConn).Tables[0];
+                ds.Tables.Add(GetStatus("0", "查询成功"));
+                ds.Tables.Add(dt2.Copy());
+            }
+            catch (Exception ex)
+            {
+                PubConn.writeFileLog(ex.Message);
+                ds.Tables.Add(GetStatus("-1", "查询失败," + ex.Message));
+                ds.Tables.Add(dt2);
+            }
+            return ds;
+        }
+
+        /// <summary>
+        /// 待缴费记录支付
+        /// </summary>
+        /// <param name="hospitalId">医院代码</param>
+        /// <param name="healthCardNo">用户健康卡号码</param>
+        /// <param name="patientId">患者唯一ID</param>
+        /// <param name="clinicSeq">就诊流水号</param>
+        /// <param name="orderId">支付平台订单号</param>
+        /// <param name="tradeNo">第三方支付交易流水号</param>
+        /// <param name="operatorId">操作员工号</param>
+        /// <param name="machineId">设备代码（针对自助设备）</param>
+        /// <param name="payAmout">自费金额(单位：分)</param>
+        /// <param name="recPayAmout">统筹金额(单位：分)</param>
+        /// <param name="totalPayAmout">总金额(单位：分)</param>
+        /// <param name="payMode">支付方式：具体编码定义见2.7支付方式</param>
+        /// <param name="payTime">交易时间，格式：YYYY-MM-DD HI24:MI:SS</param>
+        /// <param name="prescriptionIds">处方号，多个处方号用半角逗号分隔</param>
+        /// <param name="medicareSettleLogId">医保预结算参数</param>
+        /// <returns></returns>
+        public DataSet outpatient_Pay(string hospitalId, string healthCardNo, string patientId, string clinicSeq, string orderId,
+            string tradeNo, string operatorId, string machineId, string payAmout, string recPayAmout, string totalPayAmout,
+            string payMode, string payTime, string prescriptionIds, string medicareSettleLogId)
+        {
+            DataSet ds = new DataSet();
+            if (string.IsNullOrEmpty(hospitalId))
+            {
+                PubConn.writeFileLog("医疗机构代码不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,医疗机构代码不能为空"));
+                return ds;
+            }
+            else
+            {
+                if (hospitalId != "42520068101")
+                {
+                    PubConn.writeFileLog("医疗机构代码错误");
+                    ds.Tables.Add(GetStatus("-1", "查询失败,医疗机构代码错误"));
+                    return ds;
+                }
+            }
+            if (string.IsNullOrEmpty(healthCardNo))
+            {
+                PubConn.writeFileLog("健康卡号不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,健康卡号不能为空"));
+                return ds;
+            }
+            if (string.IsNullOrEmpty(patientId))
+            {
+                PubConn.writeFileLog("患者唯一ID不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,患者唯一ID不能为空"));
+                return ds;
+            }
+            if (string.IsNullOrEmpty(clinicSeq))
+            {
+                PubConn.writeFileLog("就诊流水号不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,就诊流水号不能为空"));
+                return ds;
+            }
+            if (string.IsNullOrEmpty(orderId))
+            {
+                PubConn.writeFileLog("支付平台订单号不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,支付平台订单号不能为空"));
+                return ds;
+            }
+            if (string.IsNullOrEmpty(tradeNo))
+            {
+                PubConn.writeFileLog("第三方交易流水号不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,第三方交易流水号不能为空"));
+                return ds;
+            }
+            if (string.IsNullOrEmpty(operatorId))
+            {
+                PubConn.writeFileLog("操作员工号不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,操作员工号不能为空"));
+                return ds;
+            }
+            if (string.IsNullOrEmpty(payAmout))
+            {
+                PubConn.writeFileLog("自费金额不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,自费金额不能为空"));
+                return ds;
+            }
+            if (string.IsNullOrEmpty(payMode))
+            {
+                PubConn.writeFileLog("支付方式不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,支付方式不能为空"));
+                return ds;
+            }
+            if (string.IsNullOrEmpty(payTime))
+            {
+                PubConn.writeFileLog("交易日期不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,交易日期不能为空"));
+                return ds;
+            }
+            if (string.IsNullOrEmpty(prescriptionIds))
+            {
+                PubConn.writeFileLog("处方号不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,处方号不能为空"));
+                return ds;
+            }
+            DataTable dt2 = new DataTable();
+            string strSql = @" SELECT DISTINCT '' REMARK, '' GUIDEINFO, A.RCPT_NO RECEIPTID
+                                      FROM OUTP_BILL_ITEMS A
+                                      LEFT JOIN CLINIC_MASTER B
+                                        ON A.RCPT_NO = B.RCPT_NO
+                                      LEFT JOIN TRADE_RECORD C
+                                        ON A.RCPT_NO = C.RCPT_NO
+                                      LEFT JOIN OUTP_PRESC_MASTER D
+                                        ON A.RCPT_NO = D.RCPT_NO
+                                     WHERE B.PATIENT_ID = '" + patientId +
+                                       "' AND B.PATIENT_ID = '" + healthCardNo +
+                                       "' AND B.VISIT_NO = '" + clinicSeq +
+                                       "' AND C.ORDER_ID = '" + orderId +
+                                       "' AND C.TRADE_NO = '" + tradeNo +
+                                       "' AND (SELECT OPERATOR_NO FROM OUTP_ACCT_MASTER " +
+                                            "WHERE MIN_RCPT_NO <= B.RCPT_NO AND MAX_RCPT_NO >= B.RCPT_NO) = '" + operatorId +
+                                       "' AND A.COSTS = '" + payAmout +
+                                       "' AND C.PAY_MODE = '" + payMode +
+                                       "' AND TO_CHAR(C.TRADE_DATE,'YYYY-MM-DD HI24:MI:SS') = '" + payTime +
+                                       "' AND D.PRESC_NO IN (" + prescriptionIds + ")";
+            if (!string.IsNullOrEmpty(machineId))
+            {
+                //strSql += " AND A.PATIENT_ID='" + healthCardNo + "' ";
+            }
+            if (!string.IsNullOrEmpty(recPayAmout))
+            {
+                //strSql += " AND A.PATIENT_ID='" + patientId + "' ";
+            }
+            if (!string.IsNullOrEmpty(totalPayAmout))
+            {
+                strSql += " AND A.COSTS = '" + totalPayAmout + "'";
+            }
+            if (!string.IsNullOrEmpty(medicareSettleLogId))
+            {
+                //strSql += " AND TO_CHAR(A.VISIT_DATE,'yyyy-MM-dd') <='" + endDate + "' ";
+            }
             try
             {
                 dt2 = PubConn.Query(strSql, strHISConn).Tables[0];

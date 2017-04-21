@@ -80,6 +80,51 @@ namespace KingdeeApp
             return basic.appointment_GetTimeInfo(hospitalId, scheduleId, deptId, clinicUnitId, doctorId, regDate, shiftCode);
         }
 
+        [WebMethod(Description = "预约")]
+        public DataSet appointment_AddOrder(string orderId, string hospitalId, string deptId, string clinicUnitId, string doctorId,
+            string doctorLevelCode, string regDate, string scheduleId, string periodId, string shiftCode, string startTime, string endTime,
+            string healthCardNo, string patientId, string patientName, string idCardNo, string phone, string orderType, string orderTime,
+            string svObjectId, string fee, string treatfee, string remark)
+        {
+            return basic.appointment_AddOrder(orderId, hospitalId, deptId, clinicUnitId, doctorId, doctorLevelCode, regDate, scheduleId,
+                periodId, shiftCode, startTime, endTime, healthCardNo, patientId, patientName, idCardNo, phone, orderType, orderTime, svObjectId,
+                fee, treatfee, remark);
+        }
+
+        [WebMethod(Description = "预约支付")]
+        public DataSet appointment_Pay(string hospitalId, string orderId, string tradeNo, string healthCardNo, string patientId,
+            string bookingNo, string svObjectId, string medicareSettleLogId, string operatorId, string machineId, string payAmout,
+            string recPayAmout, string totalPayAmout, string payMode, string payTime)
+        {
+            return basic.appointment_Pay(hospitalId, orderId, tradeNo, healthCardNo, patientId, bookingNo, svObjectId,
+                medicareSettleLogId, operatorId, machineId, payAmout, recPayAmout, totalPayAmout, payMode, payTime);
+        }
+
+        [WebMethod(Description = "取消预约")]
+        public DataSet appointment_CancelOrder(string orderId, string healthCardNo, string patientId, string scheduleId,
+           string periodId, string bookingNo, string cancelTime, string cancelReason)
+        {
+            return basic.appointment_CancelOrder(orderId, healthCardNo, patientId, scheduleId, periodId, bookingNo, cancelTime, cancelReason);
+        }
+
+        [WebMethod(Description = "挂号")]
+        public DataSet register_Pay(string lockId, string infoSeq, string orderId, string hospitalId, string healthCardNo, string patientId,
+           string orderType, string orderTime, string svObjectId, string medicareSettleLogId, string operatorId, string machineId,
+           string payAmout, string recPayAmout, string totalPayAmout, string payMode, string tradeNo)
+        {
+            return basic.register_Pay(lockId, infoSeq, orderId, hospitalId, healthCardNo, patientId, orderType, orderTime, svObjectId,
+                medicareSettleLogId, operatorId, machineId, payAmout, recPayAmout, totalPayAmout, payMode, tradeNo);
+        }
+
+         public DataSet appointment_ReturnPay(string healthCardNo, string patientId, string orderId, string scheduleId, string periodId,
+            string clinicSeq, string tradeNo, string medicareSettleLogId, string operatorId, string machineId, string refundFee,
+            string refundTime, string refundReason)
+        {
+            return basic.appointment_ReturnPay(healthCardNo, patientId, orderId, scheduleId, periodId, clinicSeq, tradeNo,
+                medicareSettleLogId, operatorId, machineId, refundFee, refundTime, refundReason);
+        }
+
+
         [WebMethod(Description = "获取当天的门诊出诊科室列表信息")]
         public DataSet register_GetDeptInfo(string hospitalId, string deptId, string deptType)
         {
@@ -106,6 +151,15 @@ namespace KingdeeApp
         }
 
 
+        [WebMethod(Description = "待缴费记录支付")]
+        public DataSet outpatient_Pay(string hospitalId, string healthCardNo, string patientId, string clinicSeq, string orderId,
+            string tradeNo, string operatorId, string machineId, string payAmout, string recPayAmout, string totalPayAmout,
+            string payMode, string payTime, string prescriptionIds, string medicareSettleLogId)
+        {
+            return outpatient_Pay(hospitalId, healthCardNo, patientId, clinicSeq, orderId, tradeNo, operatorId, machineId, payAmout, recPayAmout,
+                totalPayAmout, payMode, payTime, prescriptionIds, medicareSettleLogId);
+        }
+
         [WebMethod(Description = "已缴费记录查询")]
         public DataSet outpatient_GetCompletedPayInfo(string hospitalId, string healthCardNo, string patientId,
            string startDate, string endDate)
@@ -129,7 +183,7 @@ namespace KingdeeApp
         public DataSet outpatient_GetPrescriptionDetailInfo(string clinicSeq, string doctorId, string prescriptionId)
         {
             return basic.outpatient_GetPrescriptionDetailInfo(clinicSeq, doctorId, prescriptionId);
-        } 
+        }
 
 
 
