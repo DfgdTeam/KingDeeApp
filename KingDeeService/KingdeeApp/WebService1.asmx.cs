@@ -28,7 +28,7 @@ namespace KingdeeApp
         #region 基础信息
 
         [WebMethod(Description = "获取医院科室信息")]
-        public DataSet hospital_getDeptInfo(string hospitalId, string deptId, string deptType)
+        public DataSet hospital_getDehptInfo(string hospitalId, string deptId, string deptType)
         {
             return basic.hospital_getDeptInfo(hospitalId, deptId, deptType);
         }
@@ -183,16 +183,7 @@ namespace KingdeeApp
         public DataSet outpatient_GetPrescriptionDetailInfo(string clinicSeq, string doctorId, string prescriptionId)
         {
             return basic.outpatient_GetPrescriptionDetailInfo(clinicSeq, doctorId, prescriptionId);
-        }
-
-
-
-
-
-
-
-
-
+        } 
         #endregion
 
         #region 消息
@@ -237,20 +228,33 @@ namespace KingdeeApp
             return mess.dailyBill();
 
         }
-        //[WebMethod(Description = " 医生停诊通知")]
-        //public DataSet scheduleCancel() { 
+        [WebMethod(Description = "获取用户可用服务对象列表")]
+        public DataSet support_getSvObjec(string hospitalId, string healthCardNo)
+        {
+            return mess.support_getSvObjec(hospitalId,healthCardNo);
+        }
+        [WebMethod(Description = "获取优惠费用信息")]
+        public DataSet support_getRegFee(string hospitalId, string deptId, string doctorId, string regDate, string shiftCode, string scheduleId, string svObjectId, string patientId, string healthCardNo)
+        {
+            return mess.support_getRegFee( hospitalId,  deptId,  doctorId,  regDate,  shiftCode,  scheduleId,  svObjectId,  patientId,  healthCardNo);
+        }
 
-        //}
+        [WebMethod(Description = " 医生停诊通知")]
+        public DataSet scheduleCancel()
+        {
+            return mess.scheduleCancel();
+        }
         [WebMethod(Description = "获取诊间支付二维码接口")]
 
         public DataSet outpatientPayScan(string doctorId, string doctorName, string deptId, string deptName, string clinicSeq, string clinicTime, string patientId, string patientName, string healthCardNo, string phone, string hospitalId, string settleCode, string settleType)
         {
             return mess.outpatientPayScan(doctorId, doctorName, deptId, deptName, clinicSeq, clinicTime, patientId, patientName, healthCardNo, phone, hospitalId, settleCode, settleType);
         }
-        //[WebMethod(Description = "诊间预约通知")]
-        //public DataSet clinicBooking() { 
-
-        //}
+        [WebMethod(Description = "诊间预约通知")]
+        public DataSet clinicBooking()
+        {
+            return mess.clinicBooking();
+        }
         [WebMethod(Description = "自定义消息")]
         public DataSet customMessage()
         {
@@ -262,10 +266,11 @@ namespace KingdeeApp
         {
             return mess.outpatientPay();
         }
-        //[WebMethod(Description = "医生停诊通知")]
-        //public DataSet scheduleCancel() { 
-
-        //}
+        [WebMethod(Description = " 停诊医生信息查询")]
+        public DataSet support_getStopDoctorInfo(string hospitalId, string startDate, string endDate)
+        {
+            return mess.support_getStopDoctorInfo(hospitalId, startDate, endDate);
+        }
         #endregion
 
 
@@ -341,11 +346,7 @@ namespace KingdeeApp
         {
             return support_getGuideList(clinicSeq, receiptId);
         }
-        [WebMethod(Description = "卡信息查询")]
-        public DataSet user_getCardInfo(string idCardNo, string patientName, string phone)
-        {
-            return mess.user_getCardInfo(idCardNo, patientName, phone);
-        }
+       
         //[WebMethod(Description = " 获取用户可用服务对象列表")]
         //public DataSet support_getSvObject(string hospitalId, string healthCardNo)
         //{
@@ -362,5 +363,47 @@ namespace KingdeeApp
             return mess.support_pageQueryOrder(orderId, tradeDate, productType, payMode, pageSize, pageNo);
         }
         #endregion
+
+
+        #region 健康卡管理
+
+        [WebMethod(Description = "在线建卡")]
+
+        public DataSet user_createNewPatient(string idCardNo, string patientName, string gender, string phone, string birthday, string address, string contractPerson, string contractPersonPhone)
+        {
+            return mess.user_createNewPatient( idCardNo,  patientName,  gender,  phone,  birthday,  address,  contractPerson,  contractPersonPhone);
+        }
+        [WebMethod(Description = "绑定健康卡")]
+
+        public DataSet user_binding(string healthCardNo, string patientId, string patientName, string gender, string phone, string idCardNo)
+        {
+            return mess.user_binding( healthCardNo,  patientId,  patientName,  gender,  phone,  idCardNo);
+        }
+
+        [WebMethod(Description = "取消绑定")]
+        public DataSet user_unBinding(string healthCardNo, string patientId)
+        {
+            return mess.user_unBinding(healthCardNo, patientId);
+        }
+        [WebMethod(Description = "卡信息查询")]
+        public DataSet user_getCardInfo(string idCardNo, string patientName, string phone)
+        {
+            return mess.user_getCardInfo(idCardNo, patientName, phone);
+        }
+        #endregion
+
+        [WebMethod(Description = "号源锁定")]
+        public DataSet register_lockReg(string lockId, string hospitalId, string deptId, string clinicUnitId, string healthCardNo, string patientId, string patientName, string idCardNo, string phone, string doctorId, string doctorLevelCode, string regDate, string shiftCode, string startTime, string endTime, string scheduleId, string periodId, string svObjectId, string regFee, string treatFee, string remark)
+        {
+        
+            return mess.register_lockReg( lockId,  hospitalId,  deptId,  clinicUnitId,  healthCardNo,  patientId,  patientName,  idCardNo,  phone,  doctorId,  doctorLevelCode,  regDate,  shiftCode,  startTime,  endTime,  scheduleId,  periodId,  svObjectId,  regFee,  treatFee,  remark);
+        }
+
+
+        [WebMethod(Description = "解除号源锁定")]
+        public DataSet register_unlockReg(string lockId, string infoSeq)
+        {
+            return mess.register_unlockReg(lockId, infoSeq);
+        }
     }
 }
