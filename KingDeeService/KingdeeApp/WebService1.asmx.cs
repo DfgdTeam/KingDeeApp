@@ -130,15 +130,6 @@ namespace KingdeeApp
         {
             return basic.outpatient_GetPrescriptionDetailInfo(clinicSeq, doctorId, prescriptionId);
         } 
-
-
-
-
-
-
-
-
-
         #endregion
 
         #region 消息
