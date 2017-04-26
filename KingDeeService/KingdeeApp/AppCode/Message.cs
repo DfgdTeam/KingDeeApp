@@ -20,18 +20,19 @@ namespace KingdeeApp
         {
             DataSet ds = new DataSet();
             DataTable dt = new DataTable();
-            string sql = @"SELECT A.PATIENT_ID,
-                       A.PATIENT_ID,
-                       A.INP_NO,
-                       B.VISIT_NO,
-                       C.RESULTS_RPT_DATE_TIME,
-                       D.RESULT_DATE_TIME,
-                       D.REPORT_ITEM_CODE,
-                       D.REPORT_ITEM_NAME
-                  FROM PAT_MASTER_INDEX A
-                  JOIN CLINIC_MASTER B ON A.PATIENT_ID = B.PATIENT_ID
-                  JOIN LAB_TEST_MASTER C ON B.PATIENT_ID = C.PATIENT_ID
-                  JOIN LAB_RESULT D ON C.TEST_NO = D.TEST_NO  WHERE ROWNUM<=10";
+            string sql = @" SELECT A.PATIENT_ID,
+                                    A.PATIENT_ID,
+                                    A.INP_NO,
+                                    B.VISIT_NO,
+                                    TO_CHAR(C.RESULTS_RPT_DATE_TIME,'yyyy-mm-dd hh:mm:ss'),
+                                   TO_CHAR(D.RESULT_DATE_TIME,'yyyy-mm-dd hh:mm:ss'),
+                                    D.REPORT_ITEM_CODE,
+                                    D.REPORT_ITEM_NAME
+                               FROM PAT_MASTER_INDEX A
+                               JOIN CLINIC_MASTER B ON A.PATIENT_ID = B.PATIENT_ID
+                               JOIN LAB_TEST_MASTER C ON B.PATIENT_ID = C.PATIENT_ID
+                               JOIN LAB_RESULT D ON C.TEST_NO = D.TEST_NO
+                              WHERE ROWNUM <= 10";
             try
             {
                 dt = PubConn.Query(sql, strHISConn).Tables[0];
@@ -54,17 +55,18 @@ namespace KingdeeApp
             DataSet ds = new DataSet();
             DataTable dt = new DataTable();
             string sql = @"SELECT A.PATIENT_ID,
-                           A.PATIENT_ID,
-                           A.INP_NO,
-                           B.VISIT_NO,
-                           C.EXAM_DATE_TIME,
-                           C.REPORT_DATE_TIME,
-                           D.EXAM_ITEM_CODE,
-                           D.EXAM_ITEM
-                      FROM PAT_MASTER_INDEX A
-                      JOIN CLINIC_MASTER B ON A.PATIENT_ID = B.PATIENT_ID
-                      JOIN EXAM_MASTER C ON B.PATIENT_ID = C.PATIENT_ID
-                      JOIN EXAM_ITEMS D ON C.EXAM_NO = D.EXAM_NO";
+                                   A.PATIENT_ID,
+                                   A.INP_NO,
+                                   B.VISIT_NO,
+                                   TO_CHAR(C.EXAM_DATE_TIME, 'yyyy-mm-dd hh:mm:ss'),
+                                   TO_CHAR(C.REPORT_DATE_TIME, 'yyyy-mm-dd hh:mm:ss'),
+                                   D.EXAM_ITEM_CODE,
+                                   D.EXAM_ITEM
+                              FROM PAT_MASTER_INDEX A
+                              JOIN CLINIC_MASTER B ON A.PATIENT_ID = B.PATIENT_ID
+                              JOIN EXAM_MASTER C ON B.PATIENT_ID = C.PATIENT_ID
+                              JOIN EXAM_ITEMS D ON C.EXAM_NO = D.EXAM_NO
+                             WHERE ROWNUM <= 10";
             dt = PubConn.Query(sql, strHISConn).Tables[0];
             try
             {
@@ -87,17 +89,18 @@ namespace KingdeeApp
             DataSet ds = new DataSet();
             DataTable dt = new DataTable();
             string sql = @"SELECT A.PATIENT_ID,
-                           A.NAME,
-                           A.SEX,
-                           A.PATIENT_ID,
-                           A.PATIENT_ID,
-                           A.ID_NO,
-                           A.DATE_OF_BIRTH,
-                           A.PATIENT_ID,
-                           A.INP_NO,
-                           B.INSURANCE_NO
-                      FROM PAT_MASTER_INDEX A
-                      JOIN PAT_VISIT B ON A.PATIENT_ID = B.PATIENT_ID  WHERE ROWNUM<=10";
+                                   A.NAME,
+                                   A.SEX,
+                                   A.PATIENT_ID,
+                                   A.PATIENT_ID,
+                                   A.ID_NO,
+                                   TO_CHAR(A.DATE_OF_BIRTH, 'yyyy-mm-dd'),
+                                   A.PATIENT_ID,
+                                   A.INP_NO,
+                                   B.INSURANCE_NO
+                              FROM PAT_MASTER_INDEX A
+                              JOIN PAT_VISIT B ON A.PATIENT_ID = B.PATIENT_ID
+                             WHERE ROWNUM <= 10";
             try
             {
                 dt = PubConn.Query(sql, strHISConn).Tables[0];
@@ -139,14 +142,15 @@ namespace KingdeeApp
         {
             DataSet ds = new DataSet();
             DataTable dt = new DataTable();
-            string sql = @"SELECT C.DEPT_CODE, 
-                                    C.DEPT_NAME, 
-                                    A.DOCTOR,
-                                    B.REGISTERING_DATE, 
-                                    B.VISIT_DATE
-                                     FROM CLINIC_INDEX A
-                                     JOIN CLINIC_MASTER B ON A.CLINIC_LABEL = B.CLINIC_LABEL
-                                     JOIN DEPT_DICT C ON C.DEPT_CODE = A.CLINIC_DEPT  WHERE ROWNUM<=10";
+            string sql = @"SELECT C.DEPT_CODE,
+                                   C.DEPT_NAME,
+                                   A.DOCTOR,
+                                   TO_CHAR(B.REGISTERING_DATE, 'yyyy-mm-dd'),
+                                   TO_CHAR(B.VISIT_DATE, 'yyyy-mm-dd')
+                              FROM CLINIC_INDEX A
+                              JOIN CLINIC_MASTER B ON A.CLINIC_LABEL = B.CLINIC_LABEL
+                              JOIN DEPT_DICT C ON C.DEPT_CODE = A.CLINIC_DEPT
+                             WHERE ROWNUM <= 10";
             try
             {
                 dt = PubConn.Query(sql, strHISConn).Tables[0];
@@ -168,14 +172,14 @@ namespace KingdeeApp
         {
             DataSet ds = new DataSet();
             DataTable dt = new DataTable();
-            string sql = @"SELECT A.PATIENT_ID,
-                                   A.PATIENT_ID,
-                                   B.INP_NO,
-                                   C.BILLING_DATE_TIME,
-                                   C.TOTAL_COSTS
-                              FROM PAT_VISIT A
-                              JOIN PAT_MASTER_INDEX B ON A.PATIENT_ID = B.PATIENT_ID
-                              JOIN PATS_IN_HOSPITAL C ON C.PATIENT_ID = B.PATIENT_ID";
+            string sql = @" SELECT A.PATIENT_ID,
+                                    A.PATIENT_ID,
+                                    B.INP_NO,
+                                    TO_CHAR(C.BILLING_DATE_TIME, 'yyyy-mm-dd'),
+                                    C.TOTAL_COSTS
+                               FROM PAT_VISIT A
+                               JOIN PAT_MASTER_INDEX B ON A.PATIENT_ID = B.PATIENT_ID
+                               JOIN PATS_IN_HOSPITAL C ON C.PATIENT_ID = B.PATIENT_ID";
             try
             {
                 dt = PubConn.Query(sql, strHISConn).Tables[0];
@@ -324,11 +328,13 @@ namespace KingdeeApp
                              WHERE A.STATUS = 0";
             if (!string.IsNullOrEmpty(startDate))
             {
-                sql += " AND C.VISIT_DATE ='" + startDate + "'";
+
+                sql += " AND  TO_CHAR(C.VISIT_DATE,'YYYY-MM-DD') ='" + startDate + "'";
             }
             if (!string.IsNullOrEmpty(startDate))
             {
-                sql += " AND  AND B.CLINIC_DATE='" + startDate + "'";
+
+                sql += " AND  TO_CHAR(B.CLINIC_DATE,'YYYY-MM-DD')='" + startDate + "'";
             }
             try
             {
@@ -484,33 +490,33 @@ namespace KingdeeApp
             DataSet ds = new DataSet();
             DataTable dt = new DataTable();
             string sql = @"SELECT '42520068101' hospitalId,
-        '第二军医大学第三附属医院'hospitalName,
-       B.DEPT_CODE,
-       B.DEPT_NAME,
-       C.SERIAL_NO,
-       C.CLINIC_LABEL,
-       U.USER_DEPT,
-       A.DOCTOR,
-       '',
-       '',
-       '',
-       T.TIME_INTERVAL_CODE,
-       A.VISIT_TIME_DESC,
-       '',
-       '',
-       '',
-       '',
-       A.PATIENT_ID, 
-       A.PATIENT_ID,
-       A.PATIENT_ID,
-       A.REGIST_FEE,
-       A.CLINIC_FEE,
-       A.VISIT_NO
-  FROM CLINIC_MASTER A
-  JOIN DEPT_DICT B ON A.VISIT_DEPT = B.DEPT_CODE
-  JOIN CLINIC_INDEX C ON A.CLINIC_LABEL = C.CLINIC_LABEL
-  JOIN USERS U ON U.USER_NAME = A.DOCTOR
-  JOIN TIME_INTERVAL_DICT T ON T.TIME_INTERVAL_NAME = A.VISIT_TIME_DESC";
+                                    '第二军医大学第三附属医院'hospitalName,
+                                   B.DEPT_CODE,
+                                   B.DEPT_NAME,
+                                   C.SERIAL_NO,
+                                   C.CLINIC_LABEL,
+                                   U.USER_DEPT,
+                                   A.DOCTOR,
+                                   '',
+                                   '',
+                                   '',
+                                   T.TIME_INTERVAL_CODE,
+                                   A.VISIT_TIME_DESC,
+                                   '',
+                                   '',
+                                   '',
+                                   '',
+                                   A.PATIENT_ID, 
+                                   A.PATIENT_ID,
+                                   A.PATIENT_ID,
+                                   A.REGIST_FEE,
+                                   A.CLINIC_FEE,
+                                   A.VISIT_NO
+                              FROM CLINIC_MASTER A
+                              JOIN DEPT_DICT B ON A.VISIT_DEPT = B.DEPT_CODE
+                              JOIN CLINIC_INDEX C ON A.CLINIC_LABEL = C.CLINIC_LABEL
+                              JOIN USERS U ON U.USER_NAME = A.DOCTOR
+                              JOIN TIME_INTERVAL_DICT T ON T.TIME_INTERVAL_NAME = A.VISIT_TIME_DESC WHERE ROWNUM<=10 ";
             try
             {
                 dt = PubConn.Query(sql, strHISConn).Tables[0];
@@ -685,7 +691,7 @@ namespace KingdeeApp
             }
             if (!string.IsNullOrEmpty(idCardNo))
             {
-                sql += " AND  WHERE B.ID_NO='" + idCardNo + "'";
+                sql += " AND  B.ID_NO='" + idCardNo + "'";
             }
             if (!string.IsNullOrEmpty(healthCardNo))
             {
@@ -765,7 +771,7 @@ namespace KingdeeApp
                                    '' ISINSURAN
                                     FROM CLINIC_MASTER A
                                     JOIN CHARGE_SPECIAL_EXCEPT_DICT 
-                                    B ON A.CHARGE_TYPE = B.CHARGE_TYPE";
+                                    B ON A.CHARGE_TYPE = B.CHARGE_TYPE WHERE ROWNUM<=10";
             try
             {
 
@@ -845,7 +851,7 @@ namespace KingdeeApp
             }
             if (!string.IsNullOrEmpty(regDate))
             {
-                sql += "AND A.VISIT_DATE='" + regDate + "'";
+                sql += "AND TO_CHAR(A.VISIT_DATE,'YYYY-MM-DD')='" + regDate + "'";
             }
             if (!string.IsNullOrEmpty(shiftCode))
             {
@@ -888,10 +894,10 @@ namespace KingdeeApp
         {
             DataSet ds = new DataSet();
             DataTable dt = new DataTable();
-            if (inpatientId != "42520068101")
+            if (inpatientId=="")
             {
-                PubConn.writeFileLog("医院代码不能为空");
-                ds.Tables.Add(GETReport("-1", "查询失败,医院代码不能为空"));
+                PubConn.writeFileLog("住院号不能为空");
+                ds.Tables.Add(GETReport("-1", "查询失败,住院号不能为空"));
                 return ds;
             }
             if (billDate == "")
@@ -1722,7 +1728,7 @@ namespace KingdeeApp
             return ds;
         }
         //取消健康卡绑定
-        public DataSet user_unBinding(string healthCardNo, string patientId)
+        public DataSet  user_unBinding(string healthCardNo, string patientId)
         {
             DataSet ds = new DataSet();
             // DataTable   dt=new DataTable ();
@@ -1749,7 +1755,11 @@ namespace KingdeeApp
                 i = PubConn.ExecuteSql(sql, strHISConn);
                 if (i > 0)
                 {
-                    ds.Tables.Add(GETReport("0", "查询成功"));
+                    ds.Tables.Add(GETReport("0", "取消健康卡绑定成功"));
+
+                }
+                else {
+                    ds.Tables.Add(GETReport("-1", "取消健康卡绑定失败"));
                 }
             }
             catch (Exception ex)

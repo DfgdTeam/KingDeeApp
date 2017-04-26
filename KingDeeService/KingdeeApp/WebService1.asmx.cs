@@ -156,7 +156,7 @@ namespace KingdeeApp
             string tradeNo, string operatorId, string machineId, string payAmout, string recPayAmout, string totalPayAmout,
             string payMode, string payTime, string prescriptionIds, string medicareSettleLogId)
         {
-            return outpatient_Pay(hospitalId, healthCardNo, patientId, clinicSeq, orderId, tradeNo, operatorId, machineId, payAmout, recPayAmout,
+            return basic.outpatient_Pay(hospitalId, healthCardNo, patientId, clinicSeq, orderId, tradeNo, operatorId, machineId, payAmout, recPayAmout,
                 totalPayAmout, payMode, payTime, prescriptionIds, medicareSettleLogId);
         }
 
@@ -344,7 +344,7 @@ namespace KingdeeApp
         [WebMethod(Description = "获取指引单")]
         public DataSet support_getGuideList(string clinicSeq, string receiptId)
         {
-            return support_getGuideList(clinicSeq, receiptId);
+            return mess. support_getGuideList(clinicSeq, receiptId);
         }
        
         //[WebMethod(Description = " 获取用户可用服务对象列表")]
