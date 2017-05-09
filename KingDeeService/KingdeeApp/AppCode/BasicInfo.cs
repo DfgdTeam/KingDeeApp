@@ -634,11 +634,11 @@ namespace KingdeeApp
             }
             if (!string.IsNullOrEmpty(startDate))
             {
-                strSql += " AND TO_CHAR(A.REGDATE'yyyy-MM-dd') >= '" + startDate + "' ";
+                strSql += " AND TO_CHAR(A.REGDATE,'yyyy-MM-dd') >= '" + startDate + "' ";
             }
             if (!string.IsNullOrEmpty(endDate))
             {
-                strSql += " AND TO_CHAR(A.REGDATE'yyyy-MM-dd') <= '" + endDate + "' ";
+                strSql += " AND TO_CHAR(A.REGDATE,'yyyy-MM-dd') <= '" + endDate + "' ";
             }
             try
             {
@@ -695,7 +695,7 @@ namespace KingdeeApp
                               FROM CLINIC_FOR_REGIST C, CLINIC_INDEX B, STAFF_DICT S, DEPT_DICT D
                               WHERE B.CLINIC_LABEL = C.CLINIC_LABEL
                                AND B.DOCTOR = S.NAME
-                               AND B.CLINIC_DEPT = D.DEPT_CODE WHERE 1=1";
+                               AND B.CLINIC_DEPT = D.DEPT_CODE ";
             if (!string.IsNullOrEmpty(scheduleId))
             {
                 //strSql += " AND A.DEPTID='" + deptId + "' ";
@@ -706,7 +706,7 @@ namespace KingdeeApp
             }
             if (!string.IsNullOrEmpty(clinicUnitId))
             {
-                strSql += " AND　B.SERIAL_NO ='" + clinicUnitId + "' ";
+                strSql += "AND B.SERIAL_NO ='" + clinicUnitId + "' ";
             }
             if (!string.IsNullOrEmpty(doctorId))
             {
@@ -2083,7 +2083,8 @@ namespace KingdeeApp
             }
             if (!string.IsNullOrEmpty(strSql))
             {
-                strSql += @"  TO_DATE(TO_CHAR(B.VISIT_DATE, 'YYYY-MM-DD'), 'YYYY-MM-DD')) W
+                //strSql += @"TO_DATE(TO_CHAR(B.VISIT_DATE, 'YYYY-MM-DD'), 'YYYY-MM-DD')) W
+                 strSql += @") W
                               GROUP BY CLINICTIME,
                               CLINICSEQ,
                               HOSPITALID,
@@ -2203,7 +2204,7 @@ namespace KingdeeApp
             }
             if (!string.IsNullOrEmpty(doctorId))
             {
-                strSql += " AND (SELECT USER_ID FROM USERS WHERE USER_NAME=E.ORDERED_BY_DOCTOR AND ROWNUM=1 ) ='" + doctorId + "' ";
+                strSql += " AND (SELECT USER_ID FROM USERS WHERE USER_NAME=E.ORDERED_BY_DOCTOR AND ROWNUM=1 ) ='" + doctorId + "'WHERE ROWNUM<=10 ";
             }
             if (!string.IsNullOrEmpty(settleCode))
             {
