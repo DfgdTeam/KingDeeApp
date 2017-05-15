@@ -117,7 +117,7 @@ namespace KingdeeApp
         }
 
         [WebMethod(Description = "退号")]
-        public DataSet appointment_ReturnPay(string healthCardNo, string patientId, string orderId, string scheduleId, string periodId,
+         public DataSet appointment_ReturnPay(string healthCardNo, string patientId, string orderId, string scheduleId, string periodId,
             string clinicSeq, string tradeNo, string medicareSettleLogId, string operatorId, string machineId, string refundFee,
             string refundTime, string refundReason)
         {
@@ -177,7 +177,7 @@ namespace KingdeeApp
             return basic.outpatient_GetCompletedPayInfo(hospitalId, healthCardNo, patientId, startDate, endDate);
         }
 
-        [WebMethod(Description = "已缴费记录查询")]
+        [WebMethod(Description = "已缴费记录明细查询")]
         public DataSet outpatient_GetCompletedPayDetailInfo(string clinicSeq, string receiptId)
         {
             return basic.outpatient_GetCompletedPayDetailInfo(clinicSeq, receiptId);
@@ -193,7 +193,7 @@ namespace KingdeeApp
         public DataSet outpatient_GetPrescriptionDetailInfo(string clinicSeq, string doctorId, string prescriptionId)
         {
             return basic.outpatient_GetPrescriptionDetailInfo(clinicSeq, doctorId, prescriptionId);
-        }
+        } 
         #endregion
 
         #region 消息
@@ -356,7 +356,7 @@ namespace KingdeeApp
         {
             return mess.support_getGuideList(clinicSeq, receiptId);
         }
-
+       
         //[WebMethod(Description = " 获取用户可用服务对象列表")]
         //public DataSet support_getSvObject(string hospitalId, string healthCardNo)
         //{
@@ -405,7 +405,7 @@ namespace KingdeeApp
         [WebMethod(Description = "号源锁定")]
         public DataSet register_lockReg(string lockId, string hospitalId, string deptId, string clinicUnitId, string healthCardNo, string patientId, string patientName, string idCardNo, string phone, string doctorId, string doctorLevelCode, string regDate, string shiftCode, string startTime, string endTime, string scheduleId, string periodId, string svObjectId, string regFee, string treatFee, string remark)
         {
-
+        
             return mess.register_lockReg(lockId, hospitalId, deptId, clinicUnitId, healthCardNo, patientId, patientName, idCardNo, phone, doctorId, doctorLevelCode, regDate, shiftCode, startTime, endTime, scheduleId, periodId, svObjectId, regFee, treatFee, remark);
         }
 

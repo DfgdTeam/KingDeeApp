@@ -958,9 +958,9 @@ namespace KingdeeApp
                     strHISConn).ToString();
                 //获取预约排队号
                 string newSerialNo = PubConn.GetSingle(@" SELECT * FROM CLINIC_MASTER_APPOINT A 
-                    WHERE TO_CHAR(A.VISIT_DATE',YYYY-MM-DD')=TO_CHAR('" + regDate
+                    WHERE TO_CHAR(A.VISIT_DATE,'YYYY-MM-DD')=TO_CHAR('" + regDate
                     + "','YYYY-MM-DD') AND A.CLINIC_LABEL='" + dtClinicIndex.Rows[0]["CLINIC_LABEL"].ToString() +
-                    "' AND A.TIME_DESC='" + timeDesc + "'",
+                    "' AND A.VISIT_TIME_DESC='" + timeDesc + "'",
                     strHISConn).ToString();
                 //插入clinic_master_appoint数据
                 strSql = @" INSERT INTO CLINIC_MASTER_APPOINT
@@ -987,8 +987,7 @@ namespace KingdeeApp
                                    CLINIC_CHARGE,
                                    OPERATOR,
                                    PAY_WAY,
-                                   RCPT_NO, --收据号（将此作为微信端的订单号） 
-                                   SERIAL_NO 
+                                   RCPT_NO --收据号（将此作为微信端的订单号）--SERIAL_NO 
                                    )
                                 VALUES
                                   (TO_DATE('" + regDate + "', 'YYYY-MM-DD'),'" +
@@ -1002,20 +1001,20 @@ namespace KingdeeApp
                                              (DateTime.Now.Year - Convert.ToDateTime(dtPatInfo.Rows[0]["DATE_OF_BIRTH"]).Year) + "','" +
                                              "地方" + "','" + //IDENTITY
                                              dtPatInfo.Rows[0]["CHARGE_TYPE"].ToString() + "','" +
-                                             dtClinicIndex.Rows[0]["CLINIC_TYPE"].ToString() + "','" +
+                                             //dtClinicIndex.Rows[0]["CLINIC_TYPE"].ToString() + "','" + 
+                                            "1" + "','" +
                                              0 + "','" +
                                              clinicUnitId + "','" +
                                              doctorName + "','" +
-                                             0 + "','" +
-                                             "sysdate" + "','" +
+                                             0 + "'," +
+                                             "TO_DATE('" + DateTime.Now.ToShortDateString() + "', 'YYYY-MM-DD')" + ",'" +
                                              fee + "','" +
                                              treatfee + "','" +
                                              0 + "','" +
                                              (Convert.ToInt32(fee) + Convert.ToInt32(treatfee)) + "','" +
                                              operID + "','" +
                                              oper + "','" +
-                                             orderId + "','" +
-                                             timeDesc + "')";
+                                             orderId + "')";
                 //int result = PubConn.ExecuteSql(strSql, strHISConn);
                 if (PubConn.ExecuteSql(strSql, strHISConn) != 1)
                 {
@@ -1176,15 +1175,16 @@ namespace KingdeeApp
                 }
                 //string visitDate = dtAppoint.Rows[0]["VISIT_DATE"].ToString();
                 //string clinicLable = dtAppoint.Rows[0]["CLINIC_LABEL"].ToString();
-                //写入移动交易记录表
-                strSql = @" INSERT INTO OUTPADM.TRADE_RECORD
+
+                //写入移动交易记录表   BASEINFO.TRADE_RECORD没有这张表，改为TRADE_RECORD 插入失败
+                strSql = @"INSERT INTO OUTPADM.TRADE_RECORD
                             (TRADE_NO, TRADE_DATE, RCPT_NO, ORDER_ID, PAY_MODE, COSTS)
                           VALUES
                             ('" + tradeNo +
                                "', TO_DATE('" + payTime + "', 'YYYY-MM-DD HH24:MI:SS'),'" +
                                orderId + "','" +
                              orderId + "','" +
-                             payMode + "','" +
+                             payMode + "'," +
                              "TO_NUMBER('" + payAmout + "') / 100)";
                 if (PubConn.ExecuteSql(strSql, strHISConn) != 1)
                 {
@@ -1373,7 +1373,7 @@ namespace KingdeeApp
                     return ds;
                 }
                 //处理完后删除未支付的订单数据
-                strSql = @" DELETE FROM CLINIC_MASTER_APPOINT A
+                strSql = @"DELETE FROM CLINIC_MASTER_APPOINT A
                                      WHERE TO_CHAR(A.VISIT_DATE,'YYYY-MM-DD') = TO_CHAR('" + dt2.Rows[0]["VISIT_DATE"].ToString() +
                                        "','YYYY-MM-DD') AND A.PATIENT_ID = '" + patientId +
                                        "' AND A.RCPT_NO =  '" + orderId + "'";
@@ -1562,7 +1562,7 @@ namespace KingdeeApp
                 string maxSerialNo = PubConn.GetSingle(@" SELECT * FROM CLINIC_MASTER A 
                                             WHERE TO_CHAR(A.VISIT_DATE,'YYYY-MM-DD')=TO_CHAR('" + dtAppoint.Rows[0]["VISIT_DATE"].ToString()
                                             + "','YYYY-MM-DD') AND A.CLINIC_LABEL='" + dtAppoint.Rows[0]["CLINIC_LABEL"].ToString() +
-                                            "' AND A.TIME_DESC='" + dtAppoint.Rows[0]["VISIT_TIME_DESC"].ToString() + "'",
+                                            "' AND A.VISIT_TIME_DESC='" + dtAppoint.Rows[0]["VISIT_TIME_DESC"].ToString() + "'",
                                             strHISConn).ToString();
                 //插入clinic_master_appoint数据
                 strSql = @" INSERT INTO CLINIC_MASTER
@@ -1618,8 +1618,7 @@ namespace KingdeeApp
                                              A.CLINIC_CHARGE,
                                              '" + oper +
                                                @"'OPERNAME,
-                                              '" + oper +
-                                               @"' PAYWAY,
+                                              
                                               '" + orderId +
                                                @"'ORDERID
                                         FROM CLINIC_MASTER_APPOINT A
@@ -1633,11 +1632,10 @@ namespace KingdeeApp
                 }
                 //就诊流水号
                 string clinicSeq = dtAppoint.Rows[0]["VISIT_DATE"].ToString() + dtAppoint.Rows[0]["VISIT_NO"].ToString() + maxSerialNo;
-                //记录就诊流水号
+                //记录就诊流水号 A.CLINIC_SEQ = '" + clinicSeq +"',
                 strSql = @" UPDATE CLINIC_MASTER_APPOINT A
-                                 SET A.CLINIC_SEQ          = '" + clinicSeq +
-                                     "', A.OPERATOR            = '" + operID +
-                                     "', A.PAY_WAY             = '" + oper +
+                                   SET A.OPERATOR= '" + operID +
+                                     "', A.PAY_WAY= '" + oper +
                                      "', A.REGISTRATION_STATUS = '1' WHERE A.RCPT_NO = '" + orderId + "';";
                 if (PubConn.ExecuteSql(strSql, strHISConn) != 1)
                 {
@@ -2084,7 +2082,7 @@ namespace KingdeeApp
             if (!string.IsNullOrEmpty(strSql))
             {
                 //strSql += @"TO_DATE(TO_CHAR(B.VISIT_DATE, 'YYYY-MM-DD'), 'YYYY-MM-DD')) W
-                strSql += @") W
+                 strSql += @") W
                               GROUP BY CLINICTIME,
                               CLINICSEQ,
                               HOSPITALID,
