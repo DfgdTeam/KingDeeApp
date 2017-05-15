@@ -1177,7 +1177,7 @@ namespace KingdeeApp
                 //string visitDate = dtAppoint.Rows[0]["VISIT_DATE"].ToString();
                 //string clinicLable = dtAppoint.Rows[0]["CLINIC_LABEL"].ToString();
                 //写入移动交易记录表
-                strSql = @" INSERT INTO BASEINFO.TRADE_RECORD
+                strSql = @" INSERT INTO OUTPADM.TRADE_RECORD
                             (TRADE_NO, TRADE_DATE, RCPT_NO, ORDER_ID, PAY_MODE, COSTS)
                           VALUES
                             ('" + tradeNo +
@@ -1748,7 +1748,7 @@ namespace KingdeeApp
             {
                 //获取支付方式
                 string payMode = PubConn.GetSingle(@" SELECT PAY_MODE
-                                                              FROM TRADE_RECORD
+                                                              FROM OUTPADM.TRADE_RECORD
                                                              WHERE ORDER_ID = '" + orderId + "'", strHISConn).ToString();
                 //存入交易记录表
                 //首先判断是否已经退号
@@ -1763,7 +1763,7 @@ namespace KingdeeApp
                     ds.Tables.Add(GetStatus("-1", "查询失败,该号已退号"));
                     return ds;
                 }
-                strSql = @" INSERT INTO BASEINFO.TRADE_RECORD
+                strSql = @" INSERT INTO OUTPADM.TRADE_RECORD
                                       (TRADE_NO, TRADE_DATE, RCPT_NO, ORDER_ID, PAY_MODE, COSTS)
                                     VALUES
                                       ('" + tradeNo +
@@ -2084,7 +2084,7 @@ namespace KingdeeApp
             if (!string.IsNullOrEmpty(strSql))
             {
                 //strSql += @"TO_DATE(TO_CHAR(B.VISIT_DATE, 'YYYY-MM-DD'), 'YYYY-MM-DD')) W
-                 strSql += @") W
+                strSql += @") W
                               GROUP BY CLINICTIME,
                               CLINICSEQ,
                               HOSPITALID,
@@ -2282,7 +2282,7 @@ namespace KingdeeApp
                                        '0' ALLOWREFUND,
                                        '' REMARK,
                                        C.ORDER_ID ORDERID --移动平台订单号
-                              FROM OUTP_ORDER_DESC A, OUTP_BILL_ITEMS B, DEPT_DICT,TRADE_RECORD C
+                              FROM OUTP_ORDER_DESC A, OUTP_BILL_ITEMS B, DEPT_DICT,OUTPADM.TRADE_RECORD C
                              WHERE A.VISIT_DATE = B.VISIT_DATE
                                AND A.VISIT_NO = B.VISIT_NO
                                AND A.ORDERED_BY_DEPT = DEPT_DICT.DEPT_CODE(+)
@@ -2437,7 +2437,7 @@ namespace KingdeeApp
                                       FROM OUTP_BILL_ITEMS A
                                       LEFT JOIN CLINIC_MASTER B
                                         ON A.RCPT_NO = B.RCPT_NO
-                                      LEFT JOIN TRADE_RECORD C
+                                      LEFT JOIN OUTPADM.TRADE_RECORD C
                                         ON A.RCPT_NO = C.RCPT_NO
                                       LEFT JOIN OUTP_PRESC_MASTER D
                                         ON A.RCPT_NO = D.RCPT_NO
@@ -2678,6 +2678,107 @@ namespace KingdeeApp
             return ds;
         }
 
+        /// <summary>
+        /// 门诊退费
+        /// </summary>
+        /// <param name="healthCardNo">用户健康卡号码</param>
+        /// <param name="patientId">患者唯一ID</param>
+        /// <param name="orderId">移动订单号</param>
+        /// <param name="clinicSeq">就诊流水号</param>
+        /// <param name="refundNo">退费流水号</param>
+        /// <param name="receiptId">收据ID</param>
+        /// <param name="medicareSettleLogId">医保预结算参数</param>
+        /// <param name="detailId">退费项目ID，多个项目用,隔开，填空则表示取消全部项目</param>
+        /// <param name="operatorId">操作员工号</param>
+        /// <param name="machineId">设备代码（针对自助设备）</param>
+        /// <param name="refundFee">退费金额(单位“分”)</param>
+        /// <param name="refundTime">退费时间，格式：YYYY-MM-DD HI24:MI:SS</param>
+        /// <param name="refundReason">退费原因</param>
+        /// <returns></returns>
+        public DataSet outpatient_Refund(string healthCardNo, string patientId, string orderId, string clinicSeq, string refundNo,
+            string receiptId, string medicareSettleLogId, string detailId, string operatorId, string machineId, string refundFee,
+            string refundTime, string refundReason)
+        {
+           
+            DataSet ds = new DataSet();
+            #region 验证
+            if (string.IsNullOrEmpty(healthCardNo))
+            {
+                PubConn.writeFileLog("用户健康卡号码不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,用户健康卡号码不能为空"));
+                return ds;
+            }
+            if (string.IsNullOrEmpty(orderId))
+            {
+                PubConn.writeFileLog("患者唯一ID不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,患者唯一ID不能为空"));
+                return ds;
+            }
+            if (string.IsNullOrEmpty(healthCardNo))
+            {
+                PubConn.writeFileLog("移动订单号不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,移动订单号不能为空"));
+                return ds;
+            }
+            if (string.IsNullOrEmpty(clinicSeq))
+            {
+                PubConn.writeFileLog("就诊流水号不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,就诊流水号不能为空"));
+                return ds;
+            }
+            if (string.IsNullOrEmpty(refundNo))
+            {
+                PubConn.writeFileLog("退费流水号不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,退费流水号不能为空"));
+                return ds;
+            }
+            if (string.IsNullOrEmpty(operatorId))
+            {
+                PubConn.writeFileLog("操作员工号不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,操作员工号不能为空"));
+                return ds;
+            }
+            if (string.IsNullOrEmpty(refundFee))
+            {
+                PubConn.writeFileLog("退费金额不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,退费金额不能为空"));
+                return ds;
+            }
+            if (string.IsNullOrEmpty(refundTime))
+            {
+                PubConn.writeFileLog("退费时间不能为空");
+                ds.Tables.Add(GetStatus("-1", "查询失败,退费时间不能为空"));
+                return ds;
+            } 
+            #endregion
+            DataTable dt2 = new DataTable();
+            //获取支付方式
+            string payMode = PubConn.GetSingle(@" SELECT PAY_MODE
+                                                              FROM OUTPADM.TRADE_RECORD
+                                                             WHERE ORDER_ID = '" + orderId + "'", strHISConn).ToString();
+            //1、需要插入门诊缴费记录表退费记录outp_bill_items
+            //2、插入移动交易记录表退费记录trade_record
+            string strSql = @"INSERT INTO OUTPADM.TRADE_RECORD
+                            (TRADE_NO, TRADE_DATE, RCPT_NO, ORDER_ID, PAY_MODE, COSTS)
+                          VALUES
+                            ('" + refundNo +
+                               "', TO_DATE('" + refundTime + "', 'YYYY-MM-DD HH24:MI:SS'),'" +
+                               receiptId + "','" +
+                             orderId + "','" +
+                             payMode + "','" +
+                             "TO_NUMBER('" + refundFee + "') / 100)";
+            try
+            {
+                PubConn.ExecuteSql(strSql, strHISConn);
+                ds.Tables.Add(GetStatus("0", "查询成功"));
+            }
+            catch (Exception ex)
+            {
+                PubConn.writeFileLog(ex.Message);
+                ds.Tables.Add(GetStatus("-1", "查询失败" + ex.Message));
+            }
+            return ds;
+        }
 
 
         #region 私有方法

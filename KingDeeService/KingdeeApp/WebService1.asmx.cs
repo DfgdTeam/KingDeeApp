@@ -116,12 +116,22 @@ namespace KingdeeApp
                 medicareSettleLogId, operatorId, machineId, payAmout, recPayAmout, totalPayAmout, payMode, tradeNo);
         }
 
-         public DataSet appointment_ReturnPay(string healthCardNo, string patientId, string orderId, string scheduleId, string periodId,
+        [WebMethod(Description = "退号")]
+        public DataSet appointment_ReturnPay(string healthCardNo, string patientId, string orderId, string scheduleId, string periodId,
             string clinicSeq, string tradeNo, string medicareSettleLogId, string operatorId, string machineId, string refundFee,
             string refundTime, string refundReason)
         {
             return basic.appointment_ReturnPay(healthCardNo, patientId, orderId, scheduleId, periodId, clinicSeq, tradeNo,
                 medicareSettleLogId, operatorId, machineId, refundFee, refundTime, refundReason);
+        }
+
+        [WebMethod(Description = "门诊退费")]
+        public DataSet outpatient_Refund(string healthCardNo, string patientId, string orderId, string clinicSeq, string refundNo,
+            string receiptId, string medicareSettleLogId, string detailId, string operatorId, string machineId, string refundFee,
+            string refundTime, string refundReason)
+        {
+            return basic.outpatient_Refund(healthCardNo, patientId, orderId, clinicSeq, refundNo, receiptId, medicareSettleLogId, detailId
+                , operatorId, machineId, refundFee, refundTime, refundReason);
         }
 
 
@@ -183,7 +193,7 @@ namespace KingdeeApp
         public DataSet outpatient_GetPrescriptionDetailInfo(string clinicSeq, string doctorId, string prescriptionId)
         {
             return basic.outpatient_GetPrescriptionDetailInfo(clinicSeq, doctorId, prescriptionId);
-        } 
+        }
         #endregion
 
         #region 消息
@@ -231,12 +241,12 @@ namespace KingdeeApp
         [WebMethod(Description = "获取用户可用服务对象列表")]
         public DataSet support_getSvObjec(string hospitalId, string healthCardNo)
         {
-            return mess.support_getSvObjec(hospitalId,healthCardNo);
+            return mess.support_getSvObjec(hospitalId, healthCardNo);
         }
         [WebMethod(Description = "获取优惠费用信息")]
         public DataSet support_getRegFee(string hospitalId, string deptId, string doctorId, string regDate, string shiftCode, string scheduleId, string svObjectId, string patientId, string healthCardNo)
         {
-            return mess.support_getRegFee( hospitalId,  deptId,  doctorId,  regDate,  shiftCode,  scheduleId,  svObjectId,  patientId,  healthCardNo);
+            return mess.support_getRegFee(hospitalId, deptId, doctorId, regDate, shiftCode, scheduleId, svObjectId, patientId, healthCardNo);
         }
 
         [WebMethod(Description = " 医生停诊通知")]
@@ -344,9 +354,9 @@ namespace KingdeeApp
         [WebMethod(Description = "获取指引单")]
         public DataSet support_getGuideList(string clinicSeq, string receiptId)
         {
-            return mess. support_getGuideList(clinicSeq, receiptId);
+            return mess.support_getGuideList(clinicSeq, receiptId);
         }
-       
+
         //[WebMethod(Description = " 获取用户可用服务对象列表")]
         //public DataSet support_getSvObject(string hospitalId, string healthCardNo)
         //{
@@ -371,13 +381,13 @@ namespace KingdeeApp
 
         public DataSet user_createNewPatient(string idCardNo, string patientName, string gender, string phone, string birthday, string address, string contractPerson, string contractPersonPhone)
         {
-            return mess.user_createNewPatient( idCardNo,  patientName,  gender,  phone,  birthday,  address,  contractPerson,  contractPersonPhone);
+            return mess.user_createNewPatient(idCardNo, patientName, gender, phone, birthday, address, contractPerson, contractPersonPhone);
         }
         [WebMethod(Description = "绑定健康卡")]
 
         public DataSet user_binding(string healthCardNo, string patientId, string patientName, string gender, string phone, string idCardNo)
         {
-            return mess.user_binding( healthCardNo,  patientId,  patientName,  gender,  phone,  idCardNo);
+            return mess.user_binding(healthCardNo, patientId, patientName, gender, phone, idCardNo);
         }
 
         [WebMethod(Description = "取消绑定")]
@@ -395,8 +405,8 @@ namespace KingdeeApp
         [WebMethod(Description = "号源锁定")]
         public DataSet register_lockReg(string lockId, string hospitalId, string deptId, string clinicUnitId, string healthCardNo, string patientId, string patientName, string idCardNo, string phone, string doctorId, string doctorLevelCode, string regDate, string shiftCode, string startTime, string endTime, string scheduleId, string periodId, string svObjectId, string regFee, string treatFee, string remark)
         {
-        
-            return mess.register_lockReg( lockId,  hospitalId,  deptId,  clinicUnitId,  healthCardNo,  patientId,  patientName,  idCardNo,  phone,  doctorId,  doctorLevelCode,  regDate,  shiftCode,  startTime,  endTime,  scheduleId,  periodId,  svObjectId,  regFee,  treatFee,  remark);
+
+            return mess.register_lockReg(lockId, hospitalId, deptId, clinicUnitId, healthCardNo, patientId, patientName, idCardNo, phone, doctorId, doctorLevelCode, regDate, shiftCode, startTime, endTime, scheduleId, periodId, svObjectId, regFee, treatFee, remark);
         }
 
 
