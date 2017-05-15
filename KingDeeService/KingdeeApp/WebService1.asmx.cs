@@ -167,7 +167,7 @@ namespace KingdeeApp
             return basic.outpatient_GetCompletedPayInfo(hospitalId, healthCardNo, patientId, startDate, endDate);
         }
 
-        [WebMethod(Description = "已缴费记录查询")]
+        [WebMethod(Description = "已缴费记录明细查询")]
         public DataSet outpatient_GetCompletedPayDetailInfo(string clinicSeq, string receiptId)
         {
             return basic.outpatient_GetCompletedPayDetailInfo(clinicSeq, receiptId);

@@ -20,19 +20,19 @@ namespace KingdeeApp
         {
             DataSet ds = new DataSet();
             DataTable dt = new DataTable();
-            string sql = @" SELECT A.PATIENT_ID,
-                                    A.PATIENT_ID,
-                                    A.INP_NO,
-                                    B.VISIT_NO,
-                                    TO_CHAR(C.RESULTS_RPT_DATE_TIME,'yyyy-mm-dd hh:mm:ss'),
-                                   TO_CHAR(D.RESULT_DATE_TIME,'yyyy-mm-dd hh:mm:ss'),
-                                    D.REPORT_ITEM_CODE,
-                                    D.REPORT_ITEM_NAME
-                               FROM PAT_MASTER_INDEX A
-                               JOIN CLINIC_MASTER B ON A.PATIENT_ID = B.PATIENT_ID
-                               JOIN LAB_TEST_MASTER C ON B.PATIENT_ID = C.PATIENT_ID
-                               JOIN LAB_RESULT D ON C.TEST_NO = D.TEST_NO
-                              WHERE ROWNUM <= 10";
+            string sql = @" SELECT A.PATIENT_ID HEALTHCARDNO,
+                                   A.PATIENT_ID PATIENTID,
+                                   A.INP_NO INPATIENTID,
+                                   B.VISIT_NO CLINICSEQ,
+                                   TO_CHAR(C.RESULTS_RPT_DATE_TIME, 'yyyy-mm-dd hh:mm:ss') EXAMEDATE,
+                                   TO_CHAR(D.RESULT_DATE_TIME, 'yyyy-mm-dd hh:mm:ss') REPORTDATE,
+                                   D.REPORT_ITEM_CODE REPORTID,
+                                   D.REPORT_ITEM_NAME REPORTTITLE
+                              FROM PAT_MASTER_INDEX A
+                              JOIN CLINIC_MASTER B ON A.PATIENT_ID = B.PATIENT_ID
+                              JOIN LAB_TEST_MASTER C ON B.PATIENT_ID = C.PATIENT_ID
+                              JOIN LAB_RESULT D ON C.TEST_NO = D.TEST_NO
+                             WHERE ROWNUM <= 10";
             try
             {
                 dt = PubConn.Query(sql, strHISConn).Tables[0];
@@ -54,14 +54,14 @@ namespace KingdeeApp
         {
             DataSet ds = new DataSet();
             DataTable dt = new DataTable();
-            string sql = @"SELECT A.PATIENT_ID,
-                                   A.PATIENT_ID,
-                                   A.INP_NO,
-                                   B.VISIT_NO,
-                                   TO_CHAR(C.EXAM_DATE_TIME, 'yyyy-mm-dd hh:mm:ss'),
-                                   TO_CHAR(C.REPORT_DATE_TIME, 'yyyy-mm-dd hh:mm:ss'),
-                                   D.EXAM_ITEM_CODE,
-                                   D.EXAM_ITEM
+            string sql = @"SELECT A.PATIENT_ID HEALTHCARDNO,
+                                   A.PATIENT_ID PATIENTID,
+                                   A.INP_NO INPATIENTID,
+                                   B.VISIT_NO CLINICSEQ,
+                                   TO_CHAR(C.EXAM_DATE_TIME, 'yyyy-mm-dd hh:mm:ss') EXAMEDATE,
+                                   TO_CHAR(C.REPORT_DATE_TIME, 'yyyy-mm-dd hh:mm:ss') REPORTDATE,
+                                   D.EXAM_ITEM_CODE REPORTID,
+                                   D.EXAM_ITEM REPORTTITLE
                               FROM PAT_MASTER_INDEX A
                               JOIN CLINIC_MASTER B ON A.PATIENT_ID = B.PATIENT_ID
                               JOIN EXAM_MASTER C ON B.PATIENT_ID = C.PATIENT_ID
@@ -88,16 +88,16 @@ namespace KingdeeApp
         {
             DataSet ds = new DataSet();
             DataTable dt = new DataTable();
-            string sql = @"SELECT A.PATIENT_ID,
-                                   A.NAME,
-                                   A.SEX,
-                                   A.PATIENT_ID,
-                                   A.PATIENT_ID,
-                                   A.ID_NO,
-                                   TO_CHAR(A.DATE_OF_BIRTH, 'yyyy-mm-dd'),
-                                   A.PATIENT_ID,
-                                   A.INP_NO,
-                                   B.INSURANCE_NO
+            string sql = @"SELECT A.PATIENT_ID PATIENTID,
+                                   A.NAME PATIENTNAME,
+                                   A.SEX GENDER,
+                                   A.PATIENT_ID HEALTHCARDNO,
+                                   A.PATIENT_ID OLDCARDNO,
+                                   A.ID_NO IDCARDNO,
+                                   TO_CHAR(A.DATE_OF_BIRTH, 'yyyy-mm-dd') BIRTHDAY,
+                                   A.PATIENT_ID OPPATNO,
+                                   A.INP_NO INPATIENTID,
+                                   B.INSURANCE_NO MEDICARECARDNO
                               FROM PAT_MASTER_INDEX A
                               JOIN PAT_VISIT B ON A.PATIENT_ID = B.PATIENT_ID
                              WHERE ROWNUM <= 10";
@@ -121,7 +121,7 @@ namespace KingdeeApp
         {
             DataSet ds = new DataSet();
             DataTable dt = new DataTable();
-            string sql = @"SELECT A.PATIENT_ID, A.NAME, A.PATIENT_ID FROM PAT_MASTER_INDEX A  WHERE ROWNUM<=10 ";
+            string sql = @"SELECT A.PATIENT_ID patientId, A.NAME patientName, A.PATIENT_ID healthCardNo FROM PAT_MASTER_INDEX A  WHERE ROWNUM<=10 ";
             try
             {
                 dt = PubConn.Query(sql, strHISConn).Tables[0];
@@ -142,11 +142,14 @@ namespace KingdeeApp
         {
             DataSet ds = new DataSet();
             DataTable dt = new DataTable();
-            string sql = @"SELECT C.DEPT_CODE,
-                                   C.DEPT_NAME,
-                                   A.DOCTOR,
-                                   TO_CHAR(B.REGISTERING_DATE, 'yyyy-mm-dd'),
-                                   TO_CHAR(B.VISIT_DATE, 'yyyy-mm-dd')
+            string sql = @"SELECT  DISTINCT '' ORDERID,
+                                   '' CLINICSEQ,
+                                   C.DEPT_CODE DEPTID,
+                                   C.DEPT_NAME DEPTNAME,
+                                   '' DOCTORID,
+                                   A.DOCTOR DOCTORNAME,
+                                   TO_CHAR(B.REGISTERING_DATE, 'yyyy-mm-dd') INFOTIME,
+                                   TO_CHAR(B.VISIT_DATE, 'yyyy-mm-dd') VISITTIME
                               FROM CLINIC_INDEX A
                               JOIN CLINIC_MASTER B ON A.CLINIC_LABEL = B.CLINIC_LABEL
                               JOIN DEPT_DICT C ON C.DEPT_CODE = A.CLINIC_DEPT
@@ -172,11 +175,11 @@ namespace KingdeeApp
         {
             DataSet ds = new DataSet();
             DataTable dt = new DataTable();
-            string sql = @" SELECT A.PATIENT_ID,
-                                    A.PATIENT_ID,
-                                    B.INP_NO,
-                                    TO_CHAR(C.BILLING_DATE_TIME, 'yyyy-mm-dd'),
-                                    C.TOTAL_COSTS
+            string sql = @" SELECT A.PATIENT_ID HEALTHCARDNO,
+                                    A.PATIENT_ID PATIENTID,
+                                    B.INP_NO INPATIENTID,
+                                    TO_CHAR(C.BILLING_DATE_TIME, 'yyyy-mm-dd') BILLDATE,
+                                    C.TOTAL_COSTS BILLAMOUT
                                FROM PAT_VISIT A
                                JOIN PAT_MASTER_INDEX B ON A.PATIENT_ID = B.PATIENT_ID
                                JOIN PATS_IN_HOSPITAL C ON C.PATIENT_ID = B.PATIENT_ID";
@@ -218,9 +221,15 @@ namespace KingdeeApp
         {
             DataSet ds = new DataSet();
             DataTable dt = new DataTable();
-            string sql = @"SELECT A.PATIENT_ID, A.PATIENT_ID, B.EXAM_ITEM
-                                  FROM EXAM_MASTER A
-                                  JOIN EXAM_ITEMS B ON A.EXAM_NO = B.EXAM_NO  ";
+            string sql = @"SELECT A.PATIENT_ID HEALTHCARDNO,
+                                   A.PATIENT_ID PATIENTID,
+                                   B.EXAM_ITEM STUDYTYPENAME,
+                                   '' STUDYNOTE,
+                                   '' RESERVATIONTIME,
+                                   '' QUEUEINFO,
+                                   '' REPORTINFO
+                              FROM EXAM_MASTER A
+                              JOIN EXAM_ITEMS B ON A.EXAM_NO = B.EXAM_NO ";
             try
             {
                 dt = PubConn.Query(sql, strHISConn).Tables[0];
@@ -240,9 +249,13 @@ namespace KingdeeApp
         {
             DataSet ds = new DataSet();
             DataTable dt = new DataTable();
-            string sql = @"SELECT A.PATIENT_ID, A.NAME, B.VISIT_DATE
-                                  FROM PAT_MASTER_INDEX A
-                                  JOIN CLINIC_MASTER B ON A.PATIENT_ID = B.PATIENT_ID  WHERE ROWNUM<=10";
+            string sql = @"SELECT '' ORDERID,
+                                   A.PATIENT_ID HEALTHCARDNO,
+                                   A.NAME PATIENTNAME,
+                                   TO_CHAR(B.VISIT_DATE, 'yyyy-mm-dd') REGDATE
+                              FROM PAT_MASTER_INDEX A
+                              JOIN CLINIC_MASTER B ON A.PATIENT_ID = B.PATIENT_ID
+                             WHERE ROWNUM <= 10";
             try
             {
                 dt = PubConn.Query(sql, strHISConn).Tables[0];
@@ -265,11 +278,11 @@ namespace KingdeeApp
             DataSet ds = new DataSet();
             DataTable dt = new DataTable();
             string sql = @"SELECT '42520068101' HOSPITALID,
-                                   A.CLINIC_DEPT,
-                                   B.USER_DEPT,
+                                   A.CLINIC_DEPT DEPTID,
+                                   B.USER_DEPT DOCTORID,
                                    '' REPLACEDOCTORID,
                                    '' REPLACEDOCTORNAME,
-                                   C.TIME_DESC,
+                                   '' REGDATE C.TIME_DESC SHIFTCODE,
                                    '' BEGINTIME,
                                    '' ENDTIME,
                                    '' SCHEDULEID,
@@ -289,7 +302,7 @@ namespace KingdeeApp
             {
 
                 PubConn.writeFileLog(ex.Message + "\r\n" + sql + "\r\n");
-                ds.Tables.Add(GETReport("-1", "查询失败"));
+                ds.Tables.Add(GETReport("0", "没有查到此信息"));
                 ds.Tables.Add(dt.Copy());
             }
             return ds;
@@ -311,11 +324,13 @@ namespace KingdeeApp
                 ds.Tables.Add(GETReport("-1", "查询失败，号源结束日期不能为空"));
                 return ds;
             }
-            string sql = @"SELECT A.CLINIC_DEPT,
-                                   A.DOCTOR,
+            string sql = @"SELECT A.CLINIC_DEPT DEPTID,
+                                   '' DOCTORID,
+                                   A.DOCTOR DOCTORNAME,
                                    '' REPLACEDOCTORID,
                                    '' REPLACEDOCTORNAME,
-                                   B.TIME_DESC,
+                                   '' REGDATE,
+                                   B.TIME_DESC SHIFTCODE,
                                    '' BEGINTIME,
                                    '' ENDTIME,
                                    '' SCHEDULEID,
@@ -415,15 +430,7 @@ namespace KingdeeApp
                 ds.Tables.Add(GETReport("-1", "查询失败,医院代码不能为空"));
                 return ds;
             }
-            string sql = @"SELECT A.DOCTOR_ID,
-                                   A.ORDERED_BY_DOCTOR,
-                                   A.ORDERED_BY_DEPT,
-                                   B.DEPT_NAME,
-                                   C.VISIT_DATE,
-                                   C.VISIT_NO,
-                                   D.PATIENT_ID,
-                                   D.NAME,
-                                   D.NEXT_OF_KIN_PHONE
+            string sql = @"SELECT ''qrType,''qrUrl
                               FROM OUTP_ORDER_DESC A
                               JOIN DEPT_DICT B ON A.ORDERED_BY_DEPT = B.DEPT_CODE
                               JOIN CLINIC_MASTER C ON C.PATIENT_ID = A.PATIENT_ID
@@ -451,7 +458,7 @@ namespace KingdeeApp
             }
             if (!string.IsNullOrEmpty(clinicTime))
             {
-                sql += "AND C.VISIT_DATE ='" + clinicTime + "'";
+                sql += "AND TO_CHAR(C.VISIT_DATE,'yyyy-mm-dd') ='" + clinicTime + "'";
             }
             if (!string.IsNullOrEmpty(patientId))
             {
@@ -489,34 +496,34 @@ namespace KingdeeApp
         {
             DataSet ds = new DataSet();
             DataTable dt = new DataTable();
-            string sql = @"SELECT '42520068101' hospitalId,
-                                    '第二军医大学第三附属医院'hospitalName,
-                                   B.DEPT_CODE,
-                                   B.DEPT_NAME,
-                                   C.SERIAL_NO,
-                                   C.CLINIC_LABEL,
-                                   U.USER_DEPT,
-                                   A.DOCTOR,
-                                   '',
-                                   '',
-                                   '',
-                                   T.TIME_INTERVAL_CODE,
-                                   A.VISIT_TIME_DESC,
-                                   '',
-                                   '',
-                                   '',
-                                   '',
-                                   A.PATIENT_ID, 
-                                   A.PATIENT_ID,
-                                   A.PATIENT_ID,
-                                   A.REGIST_FEE,
-                                   A.CLINIC_FEE,
-                                   A.VISIT_NO
+            string sql = @"SELECT '42520068101' HOSPITALID,
+                                   '第二军医大学第三附属医院' HOSPITALNAME,
+                                   B.DEPT_CODE DEPTID,
+                                   B.DEPT_NAME DEPTNAME,
+                                   C.SERIAL_NO CLINICUNITID,
+                                   C.CLINIC_LABEL CLINICUNITNAME,
+                                   U.USER_DEPT DOCTORID,
+                                   A.DOCTOR DOCTORNAME,
+                                   '' DOCTORLEVELCODE,
+                                   '' DOCTORLEVEL,
+                                   '' REGDATE,
+                                   T.TIME_INTERVAL_CODE SHIFTCODE,
+                                   A.VISIT_TIME_DESC SHIFTNAME,
+                                   '' STARTTIME,
+                                   '' ENDTIME,
+                                   '' SCHEDULEID,
+                                   A.PATIENT_ID SVOBJECTID,
+                                   A.PATIENT_ID PATIENTID,
+                                   A.PATIENT_ID HEALTHCARDNO,
+                                   A.REGIST_FEE FEE,
+                                   A.CLINIC_FEE TREATFEE,
+                                   A.VISIT_NO APPLYID
                               FROM CLINIC_MASTER A
                               JOIN DEPT_DICT B ON A.VISIT_DEPT = B.DEPT_CODE
                               JOIN CLINIC_INDEX C ON A.CLINIC_LABEL = C.CLINIC_LABEL
                               JOIN USERS U ON U.USER_NAME = A.DOCTOR
-                              JOIN TIME_INTERVAL_DICT T ON T.TIME_INTERVAL_NAME = A.VISIT_TIME_DESC WHERE ROWNUM<=10 ";
+                              JOIN TIME_INTERVAL_DICT T ON T.TIME_INTERVAL_NAME = A.VISIT_TIME_DESC
+                             WHERE ROWNUM <= 10";
             try
             {
                 dt = PubConn.Query(sql, strHISConn).Tables[0];
@@ -537,7 +544,7 @@ namespace KingdeeApp
         {
             DataSet ds = new DataSet();
             DataTable dt = new DataTable();
-            string sql = @"SELECT  A.PATIENT_ID, A.PATIENT_ID FROM CLINIC_MASTER A  WHERE ROWNUM<=10";
+            string sql = @"SELECT  A.PATIENT_ID patientId, A.PATIENT_ID healthCardNo,''title,''message FROM CLINIC_MASTER A  WHERE ROWNUM<=10";
             try
             {
                 dt = PubConn.Query(sql, strHISConn).Tables[0];
@@ -559,24 +566,28 @@ namespace KingdeeApp
         {
             DataSet ds = new DataSet();
             DataTable dt = new DataTable();
-            string sql = @" SELECT U.USER_ID, A.ORDERED_BY_DOCTOR,
-                                     A.ORDERED_BY_DEPT,
-                                     B.DEPT_NAME,
-                                     C.VISIT_NO,
-                                     C.VISIT_DATE,
-                                     A.PATIENT_ID,
-                                     C.NAME,
-                                     A.PATIENT_ID,
-                                     D.NEXT_OF_KIN_PHONE,
-                                     R.PAY_WAY_CODE,
-                                     R.PAY_WAY_NAME
-                                FROM OUTP_ORDER_DESC A
-                                JOIN DEPT_DICT B ON A.ORDERED_BY_DEPT = B.DEPT_CODE
-                                JOIN CLINIC_MASTER C ON C.PATIENT_ID = A.PATIENT_ID
-                                JOIN PAT_MASTER_INDEX D ON C.PATIENT_ID = D.PATIENT_ID
-                                JOIN OUTP_PAYMENTS_MONEY E ON E.RCPT_NO = A.RCPT_NO
-                                JOIN PAY_WAY_DICT R ON E.MONEY_TYPE = R.PAY_WAY_NAME
-                                JOIN USERS U ON A.ORDERED_BY_DOCTOR = U.USER_NAME WHERE ROWNUM<=10";
+            string sql = @" SELECT DISTINCT *
+                                          FROM (SELECT DISTINCT U.USER_ID DOCTORID,
+                                                                A.ORDERED_BY_DOCTOR DOCTORNAME,
+                                                                A.ORDERED_BY_DEPT DEPTID,
+                                                                B.DEPT_NAME DEPTNAME,
+                                                                C.VISIT_NO CLINICSEQ,
+                                                               TO_CHAR(C.VISIT_DATE,'yyyy-mm-dd') CLINICTIME,
+                                                                A.PATIENT_ID PATIENTID,
+                                                                C.NAME PATIENTNAME,
+                                                                A.PATIENT_ID HEALTHCARDNO,
+                                                                D.NEXT_OF_KIN_PHONE PHONE,
+                                                                '42520068101' HOSPITALID,
+                                                                R.PAY_WAY_CODE SETTLECODE,
+                                                                R.PAY_WAY_NAME SETTLETYPE
+                                                  FROM OUTP_ORDER_DESC A
+                                                  JOIN DEPT_DICT B ON A.ORDERED_BY_DEPT = B.DEPT_CODE
+                                                  JOIN CLINIC_MASTER C ON C.PATIENT_ID = A.PATIENT_ID
+                                                  JOIN PAT_MASTER_INDEX D ON C.PATIENT_ID = D.PATIENT_ID
+                                                  JOIN OUTP_PAYMENTS_MONEY E ON E.RCPT_NO = A.RCPT_NO
+                                                  JOIN PAY_WAY_DICT R ON E.MONEY_TYPE = R.PAY_WAY_NAME
+                                                  JOIN USERS U ON A.ORDERED_BY_DOCTOR = U.USER_NAME
+                                                 WHERE ROWNUM <= 10) D";
             try
             {
                 dt = PubConn.Query(sql, strHISConn).Tables[0];
@@ -644,11 +655,11 @@ namespace KingdeeApp
                 ds.Tables.Add(GETReport("-1", "查询失败,支付方式不能为空"));
                 return ds;
             }
-            string sql = @"SELECT C.CHECK_NO
+            string sql = @"SELECT C.CHECK_NO RECEIPTID, '' BALANCE, '' REMARK
                                   FROM PAT_VISIT A
                                   JOIN PAT_MASTER_INDEX B ON A.PATIENT_ID = B.PATIENT_ID
-                                  JOIN PREPAYMENT_RCPT C ON C.PATIENT_ID = B.PATIENT_ID 
-                                  WHERE 1=1";
+                                  JOIN PREPAYMENT_RCPT C ON C.PATIENT_ID = B.PATIENT_ID
+                                 WHERE 1 = 1";
             //移动订单号
             if (!string.IsNullOrEmpty(orderId))
             {
@@ -725,10 +736,14 @@ namespace KingdeeApp
                 return ds;
             }
 
-            string sql = @"SELECT B.TRANSACT_DATE, B.AMOUNT, B.PAY_WAY
-                                  FROM PAT_MASTER_INDEX A
-                                  JOIN PREPAYMENT_RCPT B ON A.PATIENT_ID = B.PATIENT_ID
-                                 WHERE 1 = 1";
+            string sql = @"SELECT TO_CHAR(B.TRANSACT_DATE,'yyyy-mm-dd') PAYTIME,
+                                   B.AMOUNT PAYAMOUT,
+                                   B.PAY_WAY PAYMODE,
+                                   '' PAYFLAG,
+                                   '' REMARK
+                              FROM PAT_MASTER_INDEX A
+                              JOIN PREPAYMENT_RCPT B ON A.PATIENT_ID = B.PATIENT_ID
+                             WHERE 1 = 1";
             if (!string.IsNullOrEmpty(inpatientId))
             {
                 sql += "AND A.INP_NO='" + inpatientId + "'";
@@ -765,13 +780,14 @@ namespace KingdeeApp
                 ds.Tables.Add(GETReport("-1", "查询失败，健康卡号不能为空"));
                 return ds;
             }
-            string sql = @"SELECT A.PATIENT_ID,
-                                  '' SVOBJECT,
-                                   A.CHARGE_TYPE,
-                                   '' ISINSURAN
-                                    FROM CLINIC_MASTER A
-                                    JOIN CHARGE_SPECIAL_EXCEPT_DICT 
-                                    B ON A.CHARGE_TYPE = B.CHARGE_TYPE WHERE ROWNUM<=10";
+            string sql = @"SELECT DISTINCT '' SVOBJECT, A.CHARGE_TYPE SVOBJECT, '' ISINSURAN
+                              FROM CLINIC_MASTER A
+                              JOIN CHARGE_SPECIAL_EXCEPT_DICT B ON A.CHARGE_TYPE = B.CHARGE_TYPE
+                             WHERE ROWNUM <= 10";
+            if (!string.IsNullOrEmpty(healthCardNo))
+            {
+                sql += "AND  A.PATIENT_ID='" + healthCardNo + "'";
+            }
             try
             {
 
@@ -835,12 +851,15 @@ namespace KingdeeApp
                 PubConn.writeFileLog("健康卡号不能为空");
                 ds.Tables.Add(GETReport("-1", "查询失败，健康卡号不能为空"));
             }
-            string sql = @"SELECT 
-                                   '',
-                                   A.CHARGE_TYPE
+            string sql = @"SELECT '' YHFEE,
+                                   '' SVOBJECT,
+                                   '' MEDICARESETTLELOGID,
+                                   '' CASHFEE,
+                                   A.CHARGE_TYPE INSURANFEE
                               FROM CLINIC_MASTER A
                               JOIN USERS B ON A.DOCTOR = B.USER_NAME
-                              JOIN CHARGE_SPECIAL_EXCEPT_DICT C ON A.CHARGE_TYPE = C.CHARGE_TYPE WHERE 1=1";
+                              JOIN CHARGE_SPECIAL_EXCEPT_DICT C ON A.CHARGE_TYPE = C.CHARGE_TYPE
+                             WHERE 1 = 1";
             if (!string.IsNullOrEmpty(deptId))
             {
                 sql += "AND  A.VISIT_DEPT='" + deptId + "'";
@@ -906,23 +925,30 @@ namespace KingdeeApp
                 ds.Tables.Add(GETReport("-1", "查询失败,日清单日期不能为空"));
                 return ds;
             }
-            string sql = @"SELECT
-                           A.TOTAL_COSTS,
-                           A.PREPAYMENTS,
-                           A.TOTAL_CHARGES,
-                           C.ITEM_NO,
-                           C.RCPT_NO
-                      FROM PATS_IN_HOSPITAL A
-                      JOIN PAT_MASTER_INDEX B ON A.PATIENT_ID = B.PATIENT_ID
-                      JOIN INP_BILL_DETAIL C ON C.PATIENT_ID = B.PATIENT_ID
-                       WHERE 1=1";
+            string sql = @"SELECT A.TOTAL_COSTS TOTALAMOUT,
+                                   A.PREPAYMENTS PREPAYAMOUT,
+                                   A.TOTAL_CHARGES UNSETTLED,
+                                   '' BALANCE,
+                                   '' SETTLED,
+                                   '' BILLAMOUT,
+                                   C.ITEM_NO STARTMXSEQ,
+                                   C.RCPT_NO ENDMXSEQ,
+                                   '' REMARK,
+                                   '' FEEINFO,
+                                   '' TYPECODE,
+                                   '' TYPENAME,
+                                   '' TYPEAMOUT
+                              FROM PATS_IN_HOSPITAL A
+                              JOIN PAT_MASTER_INDEX B ON A.PATIENT_ID = B.PATIENT_ID
+                              JOIN INP_BILL_DETAIL C ON C.PATIENT_ID = B.PATIENT_ID
+                             WHERE 1 = 1";
             if (!string.IsNullOrEmpty(inpatientId))
             {
                 sql += "AND B.INP_NO='" + inpatientId + "'";
             }
             if (!string.IsNullOrEmpty(billDate))
             {
-                sql += "AND A.BILLING_DATE_TIME='" + billDate + "'";
+                sql += "AND TO_CHAR(A.BILLING_DATE_TIME,'yyyy-mm-dd')='" + billDate + "'";
             }
             try
             {
@@ -944,22 +970,24 @@ namespace KingdeeApp
         {
             DataSet ds = new DataSet();
             DataTable dt = new DataTable();
-            if (inpatientId != "42520068101")
+            if (inpatientId =="")
             {
-                PubConn.writeFileLog("医院代码不能为空");
-                ds.Tables.Add(GETReport("-1", "查询失败,医院代码不能为空"));
+                PubConn.writeFileLog("住院号不能为空");
+                ds.Tables.Add(GETReport("-1", "查询失败,住院号不能为空"));
                 return ds;
             }
-            string sql = @"SELECT 
-                           A.TOTAL_COSTS,
-                           A.PREPAYMENTS,
-                           A.TOTAL_CHARGES,
-                           C.ITEM_NAME,
-                           C.ITEM_CODE
-                      FROM PAT_VISIT A
-                      JOIN PAT_MASTER_INDEX B ON A.PATIENT_ID = B.PATIENT_ID
-                      JOIN INP_BILL_DETAIL C ON C.PATIENT_ID = B.PATIENT_ID
-                      WHERE 1=1";
+            string sql = @"SELECT A.TOTAL_COSTS TOTALAMOUT,
+                                   '' PREPAYAMOUT,
+                                   '' VALIDPREPAYAMOUT,
+                                   '' UNSETTLED,
+                                   '' FEEINFO,
+                                   C.ITEM_NAME TYPENAME,
+                                   C.ITEM_CODE TYPECODE,
+                                   '' TYPEAMOUT
+                              FROM PAT_VISIT A
+                              JOIN PAT_MASTER_INDEX B ON A.PATIENT_ID = B.PATIENT_ID
+                              JOIN INP_BILL_DETAIL C ON C.PATIENT_ID = B.PATIENT_ID
+                             WHERE 1 = 1";
             if (!string.IsNullOrEmpty(inpatientId))
             {
                 sql += "AND  B.INP_NO='" + inpatientId + "'";
@@ -997,16 +1025,13 @@ namespace KingdeeApp
                 ds.Tables.Add(GETReport("-1", "查询失败,费用分类代码"));
                 return ds;
             }
-            string sql = @"SELECT B.INP_NO,
-                                   C.ITEM_CLASS,
-                                   C.ITEM_NO,
-                                   C.RCPT_NO,
-                                   C.ITEM_NAME,
-                                   C.ITEM_CODE,
-                                   C.ITEM_NAME,
-                                   C.ITEM_SPEC,
-                                   C.AMOUNT,
-                                   C.UNITS
+            string sql = @"SELECT C.ITEM_NAME DETAILNAME,
+                                   C.ITEM_CODE DETAILID,
+                                   C.ITEM_SPEC DETAILSPEC,
+                                   C.AMOUNT DETAILPRICE,
+                                   C.UNITS DETAILCOUNT,
+                                   '' DETAILUNIT,
+                                   '' DETAILAMOUT
                               FROM PAT_VISIT A
                               JOIN PAT_MASTER_INDEX B ON A.PATIENT_ID = B.PATIENT_ID
                               JOIN INP_BILL_DETAIL C ON C.PATIENT_ID = B.PATIENT_ID
@@ -1047,7 +1072,7 @@ namespace KingdeeApp
         {
             DataSet ds = new DataSet();
             DataTable dt = new DataTable();
-            string sql = @"SELECT B.INP_NO
+            string sql = @"SELECT '' remark
                                       FROM PAT_VISIT A
                                       JOIN PAT_MASTER_INDEX B ON A.PATIENT_ID = B.PATIENT_ID
                                       WHERE 1=1";
@@ -1103,22 +1128,18 @@ namespace KingdeeApp
                 ds.Tables.Add(GETReport("-1", "查询失败,结束时间不能为空"));
                 return ds;
             }
-            string sql = @"SELECT A.PATIENT_ID,
-                                   D.INP_NO,
-                                   B.VISIT_NO,
-                                   A.EXECUTE_DATE,
-                                   A.RESULTS_RPT_DATE_TIME,
-                                   C.TEST_NO,
-                                   F.REPORT_ITEM_NAME,
-                                   A.REQUESTED_DATE_TIME,
-                                   A.RESULT_STATUS,
-                                   A.NAME,
-                                   A.AGE,
-                                   A.SEX,
-                                   E.DEPT_NAME,
-                                   A.RELEVANT_CLINIC_DIAG,
-                                   U.USER_NAME,
-                                   A.TEST_NO
+            string sql = @"SELECT C.TEST_NO INSPECTIONID,
+                                   F.REPORT_ITEM_NAME INSPECTIONNAME,
+                                   TO_CHAR(A.REQUESTED_DATE_TIME, 'yyyy-mm-dd') INSPECTIONDATE,
+                                   A.RESULT_STATUS STATUS,
+                                   A.NAME PATIENTNAME,
+                                   A.AGE PATIENTAGE,
+                                   A.SEX GENDER,
+                                   E.DEPT_NAME DEPTNAME,
+                                   A.RELEVANT_CLINIC_DIAG CLINICALDIAGNOSIS,
+                                   U.USER_NAME REPORTDOCTORNAME,
+                                   B.VISIT_NO CLINICSEQ,
+                                   D.INP_NO INPATIENTID
                               FROM LAB_TEST_MASTER A
                               JOIN CLINIC_MASTER B ON A.PATIENT_ID = B.PATIENT_ID
                               JOIN LAB_TEST_ITEMS C ON C.TEST_NO = A.TEST_NO
@@ -1126,7 +1147,7 @@ namespace KingdeeApp
                               JOIN PAT_MASTER_INDEX D ON A.PATIENT_ID = D.PATIENT_ID
                               JOIN DEPT_DICT E ON E.DEPT_CODE = A.ORDERING_DEPT
                               JOIN USERS U ON U.USER_DEPT = A.ORDERING_DEPT
-                              WHERE 1=1";
+                             WHERE 1 = 1";
             if (!string.IsNullOrEmpty(healthCardNo))
             {
                 sql += "AND A.PATIENT_ID='" + healthCardNo + "'";
@@ -1141,11 +1162,11 @@ namespace KingdeeApp
             }
             if (!string.IsNullOrEmpty(beginDate))
             {
-                sql += "AND A.EXECUTE_DATE='" + beginDate + "'";
+                sql += "AND  TO_CHAR(A.EXECUTE_DATE,'yyyy-mm-dd')='" + beginDate + "'";
             }
             if (!string.IsNullOrEmpty(endDate))
             {
-                sql += "AND  A.REQUESTED_DATE_TIME='" + endDate + "'";
+                sql += "AND   TO_CHAR(A.REQUESTED_DATE_TIME,'yyyy-mm-dd')='" + endDate + "'";
             }
             try
             {
@@ -1174,14 +1195,17 @@ namespace KingdeeApp
                 ds.Tables.Add(GETReport("-1", "查询失败,检验报告ID不能为空"));
                 return ds;
             }
-            string sql = @"SELECT A.TEST_NO,
-                                   A.REPORT_ITEM_CODE,
-                                   B.PRIORITY_INDICATOR,
-                                   A.UNITS,
-                                   A.RESULT_DATE_TIME RESULT
+            string sql = @"SELECT A.REPORT_ITEM_CODE ITEMID,
+                                   B.PRIORITY_INDICATOR ORDERNO,
+                                   A.UNITS UNIT,
+                                   '' ITEMNAME,
+                                   '' TESTRESULT,
+                                   '' ITEMREF,
+                                   '' QUARESULT,
+                                   TO_CHAR(A.RESULT_DATE_TIME, 'yyyy-mm-dd') TESTDATE
                               FROM LAB_RESULT A
                               JOIN LAB_TEST_MASTER B ON A.TEST_NO = B.TEST_NO
-                              WHERE 1=1";
+                             WHERE 1 = 1";
             if (!string.IsNullOrEmpty(inspectionId))
             {
                 sql += "AND A.TEST_NO='" + inspectionId + "'";
@@ -1230,23 +1254,16 @@ namespace KingdeeApp
                 ds.Tables.Add(GETReport("-1", "查询失败,结束时间不能为空"));
                 return ds;
             }
-            string sql = @"SELECT A.PATIENT_ID,
-                                   A.PATIENT_ID,
-                                   B.INP_NO,
-                                   C.VISIT_NO,
-                                   A.EXAM_DATE_TIME,
-                                   A.REPORT_DATE_TIME,
-                                   A.EXAM_NO,
-                                   A.PHYS_SIGN,
-                                   A.REQ_DATE_TIME,
-                                   A.RESULT_STATUS,
-                                   A.NAME,
-                                   TO_CHAR(ROUND(MONTHS_BETWEEN(SYSDATE, A.DATE_OF_BIRTH) / 12)),
-                                   A.SEX,
-                                   D.DEPT_NAME,
-                                   A.CLIN_DIAG,
-                                   C.VISIT_NO,
-                                   B.INP_NO
+            string sql = @"SELECT A.EXAM_NO REPORTID,
+                                   A.PHYS_SIGN REPORTTITLE,
+                                   TO_CHAR(A.REQ_DATE_TIME, 'YYYY-MM-DD hh:ss:mm') REPORTDATE,
+                                   A.RESULT_STATUS STATUS,
+                                   A.NAME PATIENTNAME,
+                                   TO_CHAR(ROUND(MONTHS_BETWEEN(SYSDATE, A.DATE_OF_BIRTH) / 12)) PATIENTAGE,
+                                   A.SEX GENDER,
+                                   A.CLIN_DIAG CLINICALDIAGNOSIS,
+                                   C.VISIT_NO CLINICSEQ,
+                                   B.INP_NO INPATIENTID
                               FROM EXAM_MASTER A
                               JOIN PAT_MASTER_INDEX B ON A.PATIENT_ID = B.PATIENT_ID
                               JOIN CLINIC_MASTER C ON C.PATIENT_ID = B.PATIENT_ID
@@ -1266,11 +1283,11 @@ namespace KingdeeApp
             }
             if (!string.IsNullOrEmpty(beginDate))
             {
-                sql += "AND  A.EXAM_DATE_TIME='" + beginDate + "'";
+                sql += "AND  TO_CHAR(A.EXAM_DATE_TIME,'YYYY-MM-DD hh:ss:mm')='" + beginDate + "'";
             }
             if (!string.IsNullOrEmpty(endDate))
             {
-                sql += "AND  A.REPORT_DATE_TIME='" + endDate + "'";
+                sql += "AND  TO_CHAR(A.REPORT_DATE_TIME,'YYYY-MM-DD hh:ss:mm')='" + endDate + "'";
             }
             try
             {
@@ -1298,17 +1315,17 @@ namespace KingdeeApp
                 ds.Tables.Add(GETReport("-1", "查询失败,检验报告ID不能为空"));
                 return ds;
             }
-            string sql = @"SELECT A.EXAM_NO,
-                                   B.DEPT_NAME,
-                                   A.REPORTER,
-                                   C.DESCRIPTION,
-                                   A.RESULT_STATUS,
-                                   A.REQ_PHYSICIAN,
-                                   A.EXAM_DATE_TIME
+            string sql = @"SELECT B.DEPT_NAME DEPTNAME,
+                                   A.REPORTER REPORTDOCTORNAME,
+                                   C.DESCRIPTION CHECKPARTS,
+                                   A.RESULT_STATUS EXAMINATION,
+                                   '' DIAGNOSIS,
+                                   A.REQ_PHYSICIAN CHECKDOCTORNAME,
+                                  TO_CHAR( A.EXAM_DATE_TIME,'yyyy-mm-dd') EXAMINATIONDATE
                               FROM EXAM_MASTER A
                               JOIN DEPT_DICT B ON A.REQ_DEPT = B.DEPT_CODE
                               JOIN EXAM_REPORT C ON A.EXAM_NO = C.EXAM_NO
-                              WHERE 1=1";
+                             WHERE 1 = 1";
             if (!string.IsNullOrEmpty(reportId))
             {
                 sql += "AND  A.EXAM_NO='" + reportId + "'";
@@ -1340,24 +1357,27 @@ namespace KingdeeApp
                 ds.Tables.Add(GETReport("-1", "查询失败,患者卡号,就诊流水,患者ID,移动订单号,挂号日期,就诊日期,挂号状态不能同时为空"));
 
             }
-            string sql = @"SELECT A.PATIENT_ID,
-       A.VISIT_NO,
-       A.PATIENT_ID,
-       A.RCPT_NO,
-       A.REGISTERING_DATE,
-       A.VISIT_DATE,
-       A.REGISTRATION_STATUS,
-       A.VISIT_NO,
-       A.VISIT_DEPT,
-       B.DEPT_NAME,
-       C.USER_DEPT,
-       A.DOCTOR,
-       A.SERIAL_NO,
-       A.VISIT_DATE
-  FROM CLINIC_MASTER A
-  JOIN DEPT_DICT B ON A.VISIT_DEPT = B.DEPT_CODE
-  JOIN USERS C ON C.USER_NAME = A.DOCTOR
-  WHERE 1=1";
+            string sql = @"SELECT '' STATUS,
+                                   '' ISCANCELABE,
+                                   '' ORDERID,
+                                   '' BOOKINGNO,
+                                   A.VISIT_NO CLINICSEQ,
+                                   A.VISIT_DEPT DEPTID,
+                                   B.DEPT_NAME DEPTNAME,
+                                   C.USER_DEPT DOCTORID,
+                                   A.DOCTOR DOCTORNAME,
+                                   A.SERIAL_NO QUEUENO,
+                                   '' WAITINGCOUNT,
+                                   '' WAITINGTIME,
+                                   TO_CHAR(A.VISIT_DATE,'yyyy-mm-dd') INFOTIME,
+                                   '' VISITTIME,
+                                   '' ORDERTYPE,
+                                   '' ORDERTYPE,
+                                   '' ISPAYMENT
+                              FROM CLINIC_MASTER A
+                              JOIN DEPT_DICT B ON A.VISIT_DEPT = B.DEPT_CODE
+                              JOIN USERS C ON C.USER_NAME = A.DOCTOR
+                             WHERE 1 = 1";
             if (!string.IsNullOrEmpty(healthCardNo))
             {
                 sql += "AND A.PATIENT_ID='" + healthCardNo + "'";
@@ -1376,15 +1396,15 @@ namespace KingdeeApp
             }
             if (!string.IsNullOrEmpty(orderDate))
             {
-                sql += "AND   A.REGISTERING_DATE='" + orderDate + "'";
+                sql += "AND   TO_CHAR(A.REGISTERING_DATE,'yyyy-mm-dd')='" + orderDate + "'";
             }
             if (!string.IsNullOrEmpty(visitDate))
             {
-                sql += "AND    A.VISIT_DATE='" + visitDate + "'";
+                sql += "AND    TO_CHAR(A.VISIT_DATE,'yyyy-mm-dd')='" + visitDate + "'";
             }
             if (!string.IsNullOrEmpty(orderStatus))
             {
-                sql += "AND   A.REGISTRATION_STATUS='" + visitDate + "'";
+                sql += "AND   A.REGISTRATION_STATUS='" + orderStatus + "'";
             }
             try
             {
@@ -1413,9 +1433,15 @@ namespace KingdeeApp
             }
             DataSet ds = new DataSet();
             DataTable dt = new DataTable();
-            string sql = @"SELECT A.VISIT_NO, A.RCPT_NO, A.PERFORMED_BY, B.DEPT_NAME, A.ITEM_NAME
-  FROM OUTP_BILL_ITEMS A
-  JOIN DEPT_DICT B ON A.PERFORMED_BY = B.DEPT_CODE WHERE 1=1";
+            string sql = @"SELECT A.PERFORMED_BY EXECDEPTID,
+                                   B.DEPT_NAME EXECDEPTID,
+                                   '' EXECDEPTLOCATION,
+                                   A.ITEM_NAME ITEMNAME,
+                                   '' EXECDESC,
+                                   '' REMARK
+                              FROM OUTP_BILL_ITEMS A
+                              JOIN DEPT_DICT B ON A.PERFORMED_BY = B.DEPT_CODE
+                             WHERE 1 = 1";
             if (!string.IsNullOrEmpty(clinicSeq))
             {
                 sql += "AND A.VISIT_NO='" + clinicSeq + "'";
@@ -1457,12 +1483,11 @@ namespace KingdeeApp
                 return ds;
             }
 
-            string sql = @" SELECT 
-                                    A.VIP_INDICATOR,
-                                    A.HEALEHCARDNO,
-                                    A.CREATE_DATE
-                               FROM PAT_MASTER_INDEX A
-                               WHERE 1=1";
+            string sql = @" SELECT A.VIP_INDICATOR CARDNAME,
+                                   A.HEALEHCARDNO CARDNO,
+                                   TO_CHAR(A.CREATE_DATE, 'yyyy-mm-dd') CREATEDATE
+                              FROM PAT_MASTER_INDEX A
+                             WHERE 1 = 1";
             if (!string.IsNullOrEmpty(idCardNo))
             {
                 sql += "AND A.ID_NO='" + idCardNo + "'";
@@ -1526,23 +1551,22 @@ namespace KingdeeApp
                 ds.Tables.Add(GETReport("-1", "查询失败,交易方式不能为空"));
                 return ds;
             }
-            string sql = @"SELECT A.ORDER_ID,
-                                   A.TRADE_DATE,
-                                   A.PAY_MODE,
-                                   COUNT(*),
-                                   A.ORDER_ID,
-                                   A.TRADE_DATE,
-                                   A.TRADE_NO,
-                                   A.ORDER_ID,
-                                   A.COSTS
-                              FROM TRADE_RECORD A
-                             GROUP BY A.ORDER_ID,
-                                      A.TRADE_DATE,
-                                      A.PAY_MODE,
-                                      A.TRADE_NO,
-                                      A.ORDER_ID,
-                                      A.COSTS
-                                      WHERE 1=1";
+            string sql = @" SELECT A.TRADE_DATE,
+                                    A.PAY_MODE,
+                                    COUNT(*) PAGESIZE,
+                                    '' PAGENO,
+                                    '' HASNEXTPAGE,
+                                    A.ORDER_ID ORDERINFO,
+                                    A.TRADE_DATE TRADEDATE,
+                                    A.TRADE_NO PAYMODE,
+                                    A.ORDER_ID HISORDERID,
+                                    '' TRADENO,
+                                    '' ORDERID,
+                                    A.COSTS TRADEFEE,
+                                    '' REMARK
+                               FROM OUTPADM.TRADE_RECORD A
+                              WHERE 1 = 1
+                              ";
             if (!string.IsNullOrEmpty(orderId))
             {
                 sql += "AND A.ORDER_ID='" + orderId + "'";
@@ -1554,6 +1578,17 @@ namespace KingdeeApp
             if (!string.IsNullOrEmpty(payMode))
             {
                 sql += "AND A.PAY_MODE='" + payMode + "'";
+            }
+            if (!string.IsNullOrEmpty(sql))
+            {
+
+                sql += @" 
+                            GROUP BY A.ORDER_ID,
+                                       A.TRADE_DATE,
+                                       A.PAY_MODE,
+                                       A.TRADE_NO,
+                                       A.ORDER_ID,
+                                       A.COSTS";
             }
             try
             {
@@ -1599,12 +1634,9 @@ namespace KingdeeApp
                 ds.Tables.Add(GETReport("-1", "查询失败，用户手机号不能为空"));
                 return ds;
             }
-            string sql = @"SELECT 
-                                   A.PATIENT_ID,
-                                   A.HEALEHCARDNO,
-                                   '' OPPATNO
+            string sql = @"SELECT A.PATIENT_ID PATIENTID, A.HEALEHCARDNO HEALTHCARDNO, '' OPPATNO
                               FROM PAT_MASTER_INDEX A
-                                WHERE 1=1";
+                             WHERE 1 = 1";
             if (!string.IsNullOrEmpty(idCardNo))
             {
                 sql += "AND A.ID_NO='" + idCardNo + "'";
@@ -1623,7 +1655,7 @@ namespace KingdeeApp
             }
             if (!string.IsNullOrEmpty(birthday))
             {
-                sql += "AND A.DATE_OF_BIRTH='" + birthday + "'";
+                sql += "AND TO_CHAR(A.DATE_OF_BIRTH,'yyyy-mm-dd')='" + birthday + "'";
             }
             if (!string.IsNullOrEmpty(address))
             {
@@ -1660,26 +1692,26 @@ namespace KingdeeApp
             if (healthCardNo == "")
             {
                 PubConn.writeFileLog("健康卡号不能为空");
-                ds.Tables.Add("-1", "查询失败，健康卡号不能为空");
+                ds.Tables.Add(GETReport("-1", "查询失败，健康卡号不能为空"));
                 return ds;
             }
             if (patientId == "")
             {
                 PubConn.writeFileLog("患者ID不能为空");
-                ds.Tables.Add("-1", "查询失败，患者ID不能为空");
+                ds.Tables.Add(GETReport("-1", "查询失败，患者ID不能为空"));
                 return ds;
             }
             if (gender == "")
             {
                 PubConn.writeFileLog("患者性别不能为空");
-                ds.Tables.Add("-1", "查询失败，患者性别不能为空");
+                ds.Tables.Add(GETReport("-1", "查询失败，患者性别不能为空"));
                 return ds;
             }
 
             if (phone == "")
             {
                 PubConn.writeFileLog("联系电话不能为空");
-                ds.Tables.Add("-1", "查询失败，联系电话不能为空");
+                ds.Tables.Add(GETReport("-1", "查询失败，联系电话不能为空"));
                 return ds;
             }
             string sql = @"SELECT A.HEALEHCARDNO,
@@ -1759,7 +1791,7 @@ namespace KingdeeApp
 
                 }
                 else {
-                    ds.Tables.Add(GETReport("-1", "取消健康卡绑定失败"));
+                    ds.Tables.Add(GETReport("0", "没有此卡信息，取消健康卡绑定失败"));
                 }
             }
             catch (Exception ex)
@@ -1887,8 +1919,7 @@ namespace KingdeeApp
                                                             0) AS AGE
                                                 FROM PAT_MASTER_INDEX A
                                                WHERE A.PATIENT_ID = '{0}'
-                                                 AND A.NAME = '{1}'
-                                                 AND A.HEALEHCARDNO = '{3}'", periodId, patientName, healthCardNo);
+                                                ", patientId);
             dt = PubConn.Query(sqlrs, strHISConn).Tables[0];
             if (dt.Rows.Count > 0)
             {
@@ -1930,7 +1961,11 @@ namespace KingdeeApp
                 ds.Tables.Add(GETReport("-1", "医生代码有误"));
                 return ds;
             }
-            string sqlinto = string.Format(@"insert into clinic_master_appoint
+            //获取患者当天的就诊序号，使用his的序列
+            string sqlno = @"select VISIT_NO.NEXTVAL from dual";
+            dt=PubConn.Query(sqlno,strHISConn).Tables[0];
+            string vn_visit_no = dt.Rows[0][0].ToString();
+            string sqlinto =@"insert into clinic_master_appoint
                                                                     (
                                                                       visit_date,          
                                                                       visit_no,            
@@ -1954,13 +1989,31 @@ namespace KingdeeApp
                                                                       other_fee,             
                                                                       clinic_charge,                
                                                                       rcpt_no --收据号（将此作为微信端的订单号） 
- 
-                                                                    )
-                                                                    values('{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}',
-                                                                       '{8}','{9}','{10}','{11}','{12}','{13}','{14}','{15}',
-                                                                       '{16}','{17}','{18}','{19}','{20}','{21}'
-                                                               
-                                                                    );", regDate, "", clinic_label, "", patientId, patientName, name_phonetic, sex, age, identity, "", deptId, name, "", "", regFee, treatFee, "", lockId);
+                                                                       )
+                                                                    VALUES
+                                  (TO_DATE('" + regDate + "', 'YYYY-MM-DD'),'" +
+                                             vn_visit_no + "','" +
+                                             clinic_label + "','" +
+                                             "" + "','" +
+                                             patientId + "','" +
+                                             patientName + "','" +
+                                             name_phonetic + "','" +
+                                            sex + "','" +
+                                             age + "','" +
+                                             identity + "','" + 
+                                            charge_type + "','" +
+                                            //"11" + "','" + 
+                                            "1" + "','" + 
+                                             "" + "','" +
+                                             deptId + "','" +
+                                             name  + "','" +
+                                             "" + "'," +
+                                             "TO_DATE('" + DateTime.Now.ToShortDateString() + "', 'YYYY-MM-DD')" + ",'" +
+                                             regFee + "','" +
+                                             treatFee + "','" +
+                                             "" + "','" +
+                                             ""+ "','"+
+                                             lockId + "')";
             int i = PubConn.ExecuteSql(sqlinto, strHISConn);
             if (i > 0)
             {
@@ -1971,8 +2024,8 @@ namespace KingdeeApp
                                                            WHERE TO_CHAR(C.CLINIC_DATE, 'yyyy-MM-dd') = '{0}'
                                                              AND C.CLINIC_LABEL IN (SELECT CLINIC_LABEL
                                                                                       FROM CLINIC_INDEX
-                                                                                     WHERE CLINIC_DEPT = 401450
-                                                                                       AND DOCTOR = '{1}');",regDate,name);
+                                                                                     WHERE CLINIC_DEPT = {1}
+                                                                                       AND DOCTOR = '{2}');", regDate,deptId,name);
                 int j = PubConn.ExecuteSql(sqlupdate,strHISConn); ;
                 if (j > 0)
                 {
@@ -1992,7 +2045,7 @@ namespace KingdeeApp
                 return ds;
             }
         }
-        //
+        //解除号源
         public DataSet register_unlockReg(string lockId, string infoSeq)
         {
             DataSet ds = new DataSet();
